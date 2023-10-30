@@ -1,0 +1,22 @@
+
+```mermaid
+sequenceDiagram
+    participant Browser
+    participant Server
+
+    Browser->>Server: GET /exampleapp/spa
+    activate Server
+
+    Server-->>Browser: HTML content of the single-page app 
+    Note over Browser, Server: from notes_spa in index.js
+
+    Browser->>Server: GET /exampleapp/data.json
+    activate Server
+    Note over Browser, Server: request is made in redrawNotes function in spa.js
+
+    Server-->>Browser: JSON response containing notes data
+
+    Browser->>Browser: Render notes
+
+    deactivate Server
+```
