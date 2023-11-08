@@ -2,30 +2,32 @@
 import { useState } from "react";
 import "./App.css";
 
-const Header = ({title}) => {
-  return (
-    <h2>{title}</h2>
-  )
-}
+const Header = ({ title }) => {
+  return <h2>{title}</h2>;
+};
 
 const Button = (props) => {
   return <button onClick={props.handleClick}>{props.text}</button>;
 };
 
 const Statistics = ({ good, neutral, bad, all, average, positive }) => {
-  return (
-    <>
-      <Header title="statistics" />
-      <div>
-        <Statistic text="good" count={good} />
-        <Statistic text="neutral" count={neutral} />
-        <Statistic text="bad" count={bad} />
-        <Statistic text="all" count={all} />
-        <Statistic text="average" count={average} />
-        <Statistic text="positive" count={positive} symbol="%" />
-      </div>
-    </>
-  );
+  if (all === 0) {
+    return <div>No feedback given</div>;
+  } else {
+    return (
+      <>
+        <Header title="statistics" />
+        <div>
+          <Statistic text="good" count={good} />
+          <Statistic text="neutral" count={neutral} />
+          <Statistic text="bad" count={bad} />
+          <Statistic text="all" count={all} />
+          <Statistic text="average" count={average} />
+          <Statistic text="positive" count={positive} symbol="%" />
+        </div>
+      </>
+    );
+  }
 };
 
 const Statistic = (props) => {
