@@ -2,8 +2,30 @@
 import { useState } from "react";
 import "./App.css";
 
+const Header = ({title}) => {
+  return (
+    <h2>{title}</h2>
+  )
+}
+
 const Button = (props) => {
   return <button onClick={props.handleClick}>{props.text}</button>;
+};
+
+const Statistics = ({ good, neutral, bad, all, average, positive }) => {
+  return (
+    <>
+      <Header title="statistics" />
+      <div>
+        <Statistic text="good" count={good} />
+        <Statistic text="neutral" count={neutral} />
+        <Statistic text="bad" count={bad} />
+        <Statistic text="all" count={all} />
+        <Statistic text="average" count={average} />
+        <Statistic text="positive" count={positive} symbol="%" />
+      </div>
+    </>
+  );
 };
 
 const Statistic = (props) => {
@@ -20,7 +42,7 @@ const App = () => {
   const [neutral, setNeutral] = useState(0);
   const [bad, setBad] = useState(0);
   const all = good + neutral + bad;
-  const average = ((good * 1) + (bad * -1)) / all;
+  const average = (good * 1 + bad * -1) / all;
   const positive = (good / all) * 100;
 
   const handleGoodClick = () => {
@@ -34,21 +56,20 @@ const App = () => {
   };
   return (
     <>
-      <h3>give feedback</h3>
+      <Header title="give feedback" />
       <div className="button-container">
         <Button text="good" handleClick={handleGoodClick} />
         <Button text="neutral" handleClick={handleNeutralClick} />
         <Button text="bad" handleClick={handleBadClick} />
       </div>
-      <h3>statistics</h3>
-      <div>
-        <Statistic text="good" count={good} />
-        <Statistic text="neutral" count={neutral} />
-        <Statistic text="bad" count={bad} />
-        <Statistic text="all" count={all} />
-        <Statistic text="average" count={average} />
-        <Statistic text="positive" count={positive} symbol="%"/>
-      </div>
+      <Statistics
+        good={good}
+        neutral={neutral}
+        bad={bad}
+        all={all}
+        average={average}
+        positive={positive}
+      />
     </>
   );
 };
