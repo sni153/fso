@@ -9,7 +9,7 @@ const Button = (props) => {
 const Statistic = (props) => {
   return (
     <div>
-      {props.text} {props.count}
+      {props.text} {props.count} {props.symbol}
     </div>
   );
 };
@@ -19,6 +19,9 @@ const App = () => {
   const [good, setGood] = useState(0);
   const [neutral, setNeutral] = useState(0);
   const [bad, setBad] = useState(0);
+  const all = good + neutral + bad;
+  const average = ((good * 1) + (bad * -1)) / all;
+  const positive = (good / all) * 100;
 
   const handleGoodClick = () => {
     setGood(good + 1);
@@ -42,6 +45,9 @@ const App = () => {
         <Statistic text="good" count={good} />
         <Statistic text="neutral" count={neutral} />
         <Statistic text="bad" count={bad} />
+        <Statistic text="all" count={all} />
+        <Statistic text="average" count={average} />
+        <Statistic text="positive" count={positive} symbol="%"/>
       </div>
     </>
   );
