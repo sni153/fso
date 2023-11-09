@@ -6,8 +6,16 @@ const Header = ({ title }) => {
   return <h2>{title}</h2>;
 };
 
-const Button = (props) => {
-  return <button onClick={props.handleClick}>{props.text}</button>;
+const Button = ({ handleClick, text }) => {
+  return <button onClick={handleClick}>{text}</button>;
+};
+
+const StatisticLine = (props) => {
+  return (
+    <div>
+      {props.text} {props.value} {props.symbol}
+    </div>
+  );
 };
 
 const Statistics = ({ good, neutral, bad, all, average, positive }) => {
@@ -18,24 +26,16 @@ const Statistics = ({ good, neutral, bad, all, average, positive }) => {
       <>
         <Header title="statistics" />
         <div>
-          <Statistic text="good" count={good} />
-          <Statistic text="neutral" count={neutral} />
-          <Statistic text="bad" count={bad} />
-          <Statistic text="all" count={all} />
-          <Statistic text="average" count={average} />
-          <Statistic text="positive" count={positive} symbol="%" />
+          <StatisticLine text="good" value={good} />
+          <StatisticLine text="neutral" value={neutral} />
+          <StatisticLine text="bad" value={bad} />
+          <StatisticLine text="all" value={all} />
+          <StatisticLine text="average" value={average} />
+          <StatisticLine text="positive" value={positive} symbol="%" />
         </div>
       </>
     );
   }
-};
-
-const Statistic = (props) => {
-  return (
-    <div>
-      {props.text} {props.count} {props.symbol}
-    </div>
-  );
 };
 
 const App = () => {
