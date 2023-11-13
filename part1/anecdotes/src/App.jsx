@@ -1,4 +1,5 @@
 import { useState } from "react";
+import './App.css'
 
 const App = () => {
   const anecdotes = [
@@ -9,15 +10,30 @@ const App = () => {
     "Premature optimization is the root of all evil.",
     "Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.",
     "Programming without an extremely heavy use of console.log is same as if a doctor would refuse to use x-rays or blood tests when diagnosing patients.",
-    "The only way to go fast, is to go well.",
+    "The only way to go fast is to go well.",
   ];
 
   const [selected, setSelected] = useState(0);
-  const getRandomIndex = () => setSelected(Math.floor(Math.random() * anecdotes.length));
+  const [points, setPoints] = useState(new Array(anecdotes.length).fill(0));
+
+  const getRandomIndex = () => {
+    const randomIndex = Math.floor(Math.random() * anecdotes.length);
+    setSelected(randomIndex);
+  };
+
+  const handleVote = () => {
+    const newPoints = [...points];
+    newPoints[selected] += 1;
+    setPoints(newPoints);
+  };
 
   return (
     <div>
       <p>{anecdotes[selected]}</p>
+      <p>has {points[selected]} votes</p>
+      <button className="mr-3" onClick={handleVote}>
+        vote
+      </button>
       <button onClick={getRandomIndex}>next anecdote</button>
     </div>
   );
