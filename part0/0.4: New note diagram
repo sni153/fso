@@ -1,0 +1,40 @@
+
+```mermaid
+sequenceDiagram
+    participant Browser
+    participant Server
+
+    Browser->>Server: POST /new_note
+
+    activate Server
+    Note over Browser, Server: Clicking 'Save' triggers the browser to send the user input to the server.
+
+    Server->>Server: Create a new note object
+
+    Server->>Server: Add the new note to the notes array
+
+    Server-->>Browser: HTTP status code 302, URL redirect
+
+    Browser->>Server: GET /notes
+    activate Server
+
+    Server-->>Browser: browser reloads the Notes page
+    Note over Browser, Server: reload causes three more HTTP requests 
+
+    Browser->>Server: 1. GET /main.css
+    activate Server
+
+    Server-->>Browser: main.css
+
+    Browser->>Server: 2. GET /main.js
+    activate Server
+
+    Server-->>Browser: main.js
+
+    Browser->>Server: 3. GET /data.json
+    activate Server
+
+    Server-->>Browser: data.json (notes raw data)
+
+    deactivate Server
+```
