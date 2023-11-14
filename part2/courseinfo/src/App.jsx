@@ -18,12 +18,12 @@ const Content = ({ parts }) => {
       {parts.map((part) => (
         <Part key={part.id} part={part} />
       ))}
-      <p><b>total of {sum} exercises</b></p>
+      <p>
+        <b>total of {sum} exercises</b>
+      </p>
     </>
   );
 };
-
-const sum = () => {};
 
 const Course = ({ course }) => (
   <>
