@@ -7,13 +7,13 @@ const Part = ({ part }) => (
   </div>
 );
 
-const Content = ({ course }) =>
-  course.parts.map((part) => <Part key={part.id} part={part} />);
+const Content = ({ parts }) =>
+  parts.map((part) => <Part key={part.id} part={part} />);
 
 const Course = ({ course }) => (
   <>
     <Header name={course.name} />
-    <Content course={course} />
+    <Content parts={course.parts} />
   </>
 );
 
