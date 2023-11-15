@@ -9,8 +9,13 @@ const App = () => {
     const newPerson = {
       name: newName,
     };
-    setPersons(persons.concat(newPerson));
-    setNewName("");
+    const names = persons.map((person) => person.name.toLowerCase());
+    if (names.includes(newName.toLowerCase())) {
+      alert(`${newName} is already added to phonebook`);
+    } else {
+      setPersons(persons.concat(newPerson));
+      setNewName("");
+    }
   };
 
   const handleNameChange = (event) => {
