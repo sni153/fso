@@ -1,5 +1,8 @@
 /* eslint-disable react/prop-types */
 import { useState } from "react";
+import Filter from "./components/Filter";
+import PersonForm from "./components/PersonForm";
+import Persons from "./components/Persons";
 
 const App = () => {
   // State variables
@@ -15,15 +18,6 @@ const App = () => {
     newNumber: "",
     search: "",
   });
-
-  // Component-specific variables
-  const Person = ({ person }) => {
-    return (
-      <p>
-        {person.name} {person.number}
-      </p>
-    );
-  };
 
   // Event handlers
   const handleSearch = (event) => {
@@ -53,44 +47,20 @@ const App = () => {
     }
   };
 
-  // Render function
-  const PeopleToDisplay = () => {
-    if (formData.search) {
-      return persons
-        .filter((person) => person.name.includes(formData.search))
-        .map((person) => <Person key={person.name} person={person} />);
-    } else {
-      return persons.map((person) => (
-        <p key={person.name}>
-          {person.name} {person.number}
-        </p>
-      ));
-    }
-  };
-
   // Component JSX
   return (
     <div>
       <h2>Phonebook</h2>
-      <div>
-        filter shown with{" "}
-        <input value={formData.search} onChange={handleSearch}></input>
-      </div>
-      <h2>add a new</h2>
-      <form onSubmit={addName}>
-        <div>
-          name: <input value={formData.newName} onChange={handleNameChange} />
-        </div>
-        <div>
-          number:{" "}
-          <input value={formData.newNumber} onChange={handleNumberChange} />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
-      <h2>Numbers</h2>
-      <PeopleToDisplay />
+      <Filter formData={formData} handleSearch={handleSearch} />
+      <h3>Add a new</h3>
+      <PersonForm
+        formData={formData}
+        addName={addName}
+        handleNameChange={handleNameChange}
+        handleNumberChange={handleNumberChange}
+      />
+      <h3>Numbers</h3>
+      <Persons formData={formData} persons={persons} />
     </div>
   );
 };
