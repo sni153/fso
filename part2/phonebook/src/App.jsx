@@ -24,7 +24,7 @@ const App = () => {
   // Event handlers
   const handleSearch = (event) => {
     const search = event.target.value;
-    setFormData((prevData) => ({...prevData, search}));
+    setFormData((prevData) => ({ ...prevData, search }));
   };
 
   const handleNameChange = (event) => {
@@ -47,8 +47,12 @@ const App = () => {
     if (names.includes(formData.newName.toLowerCase())) {
       alert(`${formData.newName} is already added to phonebook`);
     } else {
-      setPersons(persons.concat(newPerson));
-      setFormData({ ...formData, newName: "", newNumber: "" });
+      axios
+        .post("http://localhost:3001/persons", newPerson)
+        .then((response) => {
+          setPersons(persons.concat(response.data));
+          setFormData({ ...formData, newName: "", newNumber: "" });
+        });
     }
   };
 
