@@ -1,10 +1,9 @@
 /* eslint-disable react/prop-types */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
-import { useEffect } from "react";
-import axios from "axios";
+import personService from "./services/persons";
 
 const App = () => {
   // State variables
@@ -16,7 +15,7 @@ const App = () => {
   });
 
   useEffect(() => {
-    axios.get("http://localhost:3001/persons").then((response) => {
+    personService.getAll().then((response) => {
       setPersons(response.data);
     });
   }, []);
@@ -47,12 +46,10 @@ const App = () => {
     if (names.includes(formData.newName.toLowerCase())) {
       alert(`${formData.newName} is already added to phonebook`);
     } else {
-      axios
-        .post("http://localhost:3001/persons", newPerson)
-        .then((response) => {
-          setPersons(persons.concat(response.data));
-          setFormData({ ...formData, newName: "", newNumber: "" });
-        });
+      personService.create(newPerson).then((response) => {
+        setPersons(persons.concat(response.data));
+        setFormData({ ...formData, newName: "", newNumber: "" });
+      });
     }
   };
 
