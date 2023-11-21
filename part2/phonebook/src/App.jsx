@@ -16,7 +16,7 @@ const App = () => {
   });
 
   useEffect(() => {
-    personService.getAll().then((response) => {
+    personService.getAllContacts().then((response) => {
       setPersons(response.data);
     });
   }, []);
@@ -24,18 +24,27 @@ const App = () => {
   // Event handlers
   const handleSearch = (event) => {
     const search = event.target.value;
-    setFormData((prevData) => ({ ...prevData, search }));
+    setFormData((prevFormData) => ({ ...prevFormData, search }));
   };
 
   const handleNameChange = (event) => {
     const newName = event.target.value;
-    setFormData((prevData) => ({ ...prevData, newName }));
+    setFormData((prevFormData) => ({ ...prevFormData, newName }));
   };
 
   const handleNumberChange = (event) => {
     const newNumber = event.target.value;
-    setFormData((prevData) => ({ ...prevData, newNumber }));
+    setFormData((prevFormData) => ({ ...prevFormData, newNumber }));
   };
+
+  function findIdByName(name) {
+    for (const person of persons) {
+      if (person.name.toLowerCase() === name.toLowerCase()) {
+        return person.id;
+      }
+    }
+    return null;
+  }
 
   const addName = (event) => {
     event.preventDefault();
@@ -44,10 +53,25 @@ const App = () => {
       number: formData.newNumber,
     };
     const names = persons.map((person) => person.name.toLowerCase());
-    if (names.includes(formData.newName.toLowerCase())) {
-      alert(`${formData.newName} is already added to phonebook`);
+    const personName = formData.newName.toLowerCase();
+    if (names.includes(personName)) {
+      const personId = findIdByName(personName);
+      if (
+        window.confirm(
+          `${formData.newName} is already added to phonebook, replace the old number with a new one?`
+        )
+      ) {
+        personService.updateContact(personId, newPerson).then((response) => {
+          setPersons(
+            persons.map((person) =>
+              person.id === response.id ? response : person
+            )
+          );
+          setFormData({ ...formData, newName: "", newNumber: "" });
+        });
+      }
     } else {
-      personService.create(newPerson).then((response) => {
+      personService.createContact(newPerson).then((response) => {
         setPersons(persons.concat(response.data));
         setFormData({ ...formData, newName: "", newNumber: "" });
       });
@@ -57,7 +81,11 @@ const App = () => {
   const handleDelete = (person) => {
     if (window.confirm(`Delete ${person.name}?`)) {
       let deletedPersonId = person.id;
-      personService.deleteContact(person).then(() => setPersons(persons.filter(person => person.id !== deletedPersonId )));
+      personService
+        .deleteContact(person)
+        .then(() =>
+          setPersons(persons.filter((person) => person.id !== deletedPersonId))
+        );
     }
   };
 
