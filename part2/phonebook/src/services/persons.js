@@ -6,6 +6,6 @@ const getAll = () => axios.get(baseUrl);
 
 const create = (newPerson) => axios.post(baseUrl, newPerson);
 
-const deleteContact = (person)=> axios.delete(`http://localhost:3001/persons/${person.id}`)
+const deleteContact = (person)=> axios.delete(`${baseUrl}/${person.id}`)
 
 export default { getAll, create, deleteContact };
