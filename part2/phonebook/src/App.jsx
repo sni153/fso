@@ -4,6 +4,7 @@ import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
 import personService from "./services/persons";
+import "./App.css";
 
 const App = () => {
   // State variables
@@ -53,6 +54,13 @@ const App = () => {
     }
   };
 
+  const handleDelete = (person) => {
+    if (window.confirm(`Delete ${person.name}?`)) {
+      let deletedPersonId = person.id;
+      personService.deleteContact(person).then(() => setPersons(persons.filter(person => person.id !== deletedPersonId )));
+    }
+  };
+
   // Component JSX
   return (
     <div>
@@ -66,7 +74,11 @@ const App = () => {
         handleNumberChange={handleNumberChange}
       />
       <h3>Numbers</h3>
-      <Persons formData={formData} persons={persons} />
+      <Persons
+        formData={formData}
+        persons={persons}
+        handleDelete={handleDelete}
+      />
     </div>
   );
 };
