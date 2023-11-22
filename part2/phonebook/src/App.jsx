@@ -15,8 +15,8 @@ const App = () => {
     newNumber: "",
     search: "",
   });
-  const [message, setMessage] = useState(null)
-  const [result, setResult] = useState(null)
+  const [message, setMessage] = useState(null);
+  const [result, setResult] = useState(null);
 
   useEffect(() => {
     personService.getAllContacts().then((response) => {
@@ -64,29 +64,40 @@ const App = () => {
           `${formData.newName} is already added to phonebook, replace the old number with a new one?`
         )
       ) {
-        personService.updateContact(personId, newPerson).then((response) => {
-          setPersons(
-            persons.map((person) =>
-              person.id === response.id ? response : person
-            )
-          );
-          setFormData({ ...formData, newName: "", newNumber: "" });
-          setResult('success')
-          setMessage(`Added ${newPerson.name}`)
-          setTimeout(()=> {
-            setMessage(null)
-          }, 5000)
-        });
+        personService
+          .updateContact(personId, newPerson)
+          .then((response) => {
+            setPersons(
+              persons.map((person) =>
+                person.id === response.id ? response : person
+              )
+            );
+            setFormData({ ...formData, newName: "", newNumber: "" });
+            setResult("success");
+            setMessage(`Added ${newPerson.name}`);
+            setTimeout(() => {
+              setMessage(null);
+            }, 5000);
+          })
+          .catch(() => {
+            setResult("error");
+            setMessage(
+              `Information of ${newPerson.name} has already been removed from server`
+            );
+            setTimeout(() => {
+              setMessage(null);
+            }, 5000);
+          });
       }
     } else {
       personService.createContact(newPerson).then((response) => {
         setPersons(persons.concat(response.data));
         setFormData({ ...formData, newName: "", newNumber: "" });
-        setResult('success')
-        setMessage(`Added ${newPerson.name}`)
-        setTimeout(()=> {
-          setMessage(null)
-        }, 5000)
+        setResult("success");
+        setMessage(`Added ${newPerson.name}`);
+        setTimeout(() => {
+          setMessage(null);
+        }, 5000);
       });
     }
   };
