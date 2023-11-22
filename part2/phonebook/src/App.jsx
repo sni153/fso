@@ -4,6 +4,7 @@ import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
 import personService from "./services/persons";
+import Notification from "./components/Notification";
 import "./App.css";
 
 const App = () => {
@@ -14,6 +15,8 @@ const App = () => {
     newNumber: "",
     search: "",
   });
+  const [message, setMessage] = useState(null)
+  const [result, setResult] = useState(null)
 
   useEffect(() => {
     personService.getAllContacts().then((response) => {
@@ -68,12 +71,22 @@ const App = () => {
             )
           );
           setFormData({ ...formData, newName: "", newNumber: "" });
+          setResult('success')
+          setMessage(`Added ${newPerson.name}`)
+          setTimeout(()=> {
+            setMessage(null)
+          }, 5000)
         });
       }
     } else {
       personService.createContact(newPerson).then((response) => {
         setPersons(persons.concat(response.data));
         setFormData({ ...formData, newName: "", newNumber: "" });
+        setResult('success')
+        setMessage(`Added ${newPerson.name}`)
+        setTimeout(()=> {
+          setMessage(null)
+        }, 5000)
       });
     }
   };
@@ -93,6 +106,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} result={result} />
       <Filter formData={formData} handleSearch={handleSearch} />
       <h3>Add a new</h3>
       <PersonForm

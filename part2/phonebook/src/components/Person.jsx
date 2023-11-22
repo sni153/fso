@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 const Person = ({ person, handleDelete }) => {
   return (
-    <p>
+    <p className="person">
       {person.name} {person.number}
       <button className="button" onClick={() => handleDelete(person)}>delete</button>
     </p>
