@@ -11,27 +11,34 @@ const Filter = ({ handleSearch }) => {
   );
 };
 
-const SearchResult = ({ filteredCountries, searchTerm }) => {
+const CountryView = ({ country }) => {
+  let { area, capital, languages, flags } = country;
+  return (
+    <>
+      <h1>{country.name.common}</h1>
+      <div>capital: {capital}</div>
+      <p>area: {area}</p>
+      <ul>
+        <h3>languages:</h3>
+        {Object.values(languages).map((language) => (
+          <li key={language}>{language}</li>
+        ))}
+      </ul>
+      <img src={flags.png} alt="png flag" />
+    </>
+  );
+};
+
+const SearchResult = ({ filteredCountries, searchTerm, selectedCountry, handleShow }) => {
   if (!searchTerm) {
     return <></>;
   }
+  if (selectedCountry) {
+    return <CountryView country={selectedCountry} />;
+  }
   if (filteredCountries.length === 1) {
     let country = filteredCountries[0];
-    let { area, capital, languages, flags } = country;
-    return (
-      <>
-        <h1>{country.name.common}</h1>
-        <div>capital: {capital}</div>
-        <p>area: {area}</p>
-        <ul>
-          <h3>languages:</h3>
-          {Object.values(languages).map((language) => (
-            <li key={language}>{language}</li>
-          ))}
-        </ul>
-        <img src={flags.png} alt="png flag" />
-      </>
-    );
+    return <CountryView country={country} />;
   }
   if (filteredCountries.length >= 10) {
     return <p>Too many matches, specify another filter</p>;
@@ -40,7 +47,10 @@ const SearchResult = ({ filteredCountries, searchTerm }) => {
     return (
       <ul>
         {filteredCountries.map((country) => (
-          <li key={country.cca2}>{country.name.common}</li>
+          <li key={country.cca2}>
+            {country.name.common}
+            <button onClick={() => handleShow(country)}>show</button>
+          </li>
         ))}
       </ul>
     );
@@ -50,6 +60,7 @@ const SearchResult = ({ filteredCountries, searchTerm }) => {
 function App() {
   const [countries, setCountries] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCountry, setSelectedCountry] = useState(null);
 
   useEffect(() => {
     axios
@@ -65,6 +76,11 @@ function App() {
   const handleSearch = (event) => {
     let countryName = event.target.value.trim().toLowerCase();
     setSearchTerm(countryName);
+    setSelectedCountry(null);
+  };
+
+  const handleShow = (country) => {
+    setSelectedCountry(country);
   };
 
   let filteredCountries = countries.filter((country) => {
@@ -77,6 +93,8 @@ function App() {
       <SearchResult
         filteredCountries={filteredCountries}
         searchTerm={searchTerm}
+        selectedCountry={selectedCountry}
+        handleShow={handleShow}
       />
     </>
   );
