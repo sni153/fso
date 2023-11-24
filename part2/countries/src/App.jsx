@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import "./App.css";
 import axios from "axios";
+const WEATHER_API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
 
 const Filter = ({ handleSearch }) => {
   return (
@@ -11,8 +12,31 @@ const Filter = ({ handleSearch }) => {
   );
 };
 
+const getWeatherData = async (city) => {
+  const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${WEATHER_API_KEY}&units=metric`;
+  try {
+    const response = await axios.get(apiUrl);
+    return response.data;
+  } catch (error) {
+    console.error("Error retrieving weather data:", error);
+  }
+};
+
 const CountryView = ({ country }) => {
-  let { area, capital, languages, flags } = country;
+  const { area, capital, languages, flags } = country;
+  const [weatherData, setWeatherData] = useState(null);
+
+  useEffect(() => {
+    getWeatherData(capital).then((data) => {
+      setWeatherData(data);
+      console.log(data)
+    });
+  }, []);
+
+  if (!weatherData) {
+    return <div>Loading weather data...</div>;
+  }
+
   return (
     <>
       <h1>{country.name.common}</h1>
@@ -25,11 +49,20 @@ const CountryView = ({ country }) => {
         ))}
       </ul>
       <img src={flags.png} alt="png flag" />
+      <h3>Weather in {capital}</h3>
+      <div>temperature: {weatherData.main.temp} Celsius</div>
+      <img src={`https://openweathermap.org/img/wn/${weatherData.weather[0].icon}@2x.png`} alt="weather icon" />
+      <div>wind: {weatherData.wind.speed} m/s</div>
     </>
   );
 };
 
-const SearchResult = ({ filteredCountries, searchTerm, selectedCountry, handleShow }) => {
+const SearchResult = ({
+  filteredCountries,
+  searchTerm,
+  selectedCountry,
+  handleShow,
+}) => {
   if (!searchTerm) {
     return <></>;
   }
