@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 
-let phonebookEntries = [
+let contacts = [
   {
     id: 1,
     name: "Arto Hellas",
@@ -24,17 +24,19 @@ let phonebookEntries = [
   },
 ];
 
-app.get("/api/persons", (request, response) => {
-  response.json(phonebookEntries);
+app.get("/api/persons", (req, res) => {
+  res.json(contacts);
 });
 
-app.get("/info", (request, response) => {
-  let numberOfEntries = phonebookEntries.length;
+app.get("/info", (req, res) => {
+  let numberOfContacts = contacts.length;
   let date = new Date();
-  response.send(`Phonebook has info for ${numberOfEntries} people <br></br>${date}`)
-})
+  res.send(
+    `Phonebook has info for ${numberOfContacts} people <br></br>${date}`
+  );
+});
 
 const PORT = 3001;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
-})
+  console.log(`Server running on port ${PORT}`);
+});
