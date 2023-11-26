@@ -63,15 +63,22 @@ app.delete("/api/persons/:id", (req, res) => {
 const generateId = () => Math.floor(Math.random() * 99999);
 
 app.post("/api/persons", (req, res) => {
+  const names = contacts.map(contact => contact.name.toLowerCase())
   const body = req.body;
-  if (!body.name && !body.number) {
+  const name = body.name.toLowerCase();
+  const number = body.number;
+
+  if (!name && !number) {
     return res.status(400).json({ error: "name and number are missing" });
   }
-  if (!body.name) {
+  if (!name) {
     return res.status(400).json({ error: "name missing" });
   }
-  if (!body.number) {
+  if (!number) {
     return res.status(400).json({ error: "number missing" });
+  }
+  if (names.includes(name)) {
+    return res.status(400).json({error: 'name must be unique'})
   }
 
   const contact = {
