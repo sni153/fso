@@ -1,6 +1,8 @@
 const express = require("express");
 const app = express();
 
+app.use(express.json());
+
 // Ignore the favicon.ico request by adding a middleware function
 // that intercepts the request and responds with a 204 status code.
 app.use("/favicon.ico", (req, res, next) => {
@@ -56,6 +58,30 @@ app.delete("/api/persons/:id", (req, res) => {
   let id = Number(req.params.id);
   contacts = contacts.filter((contact) => contact.id !== id);
   res.status(204).end();
+});
+
+const generateId = () => Math.floor(Math.random() * 99999);
+
+app.post("/api/persons", (req, res) => {
+  const body = req.body;
+  if (!body.name && !body.number) {
+    return res.status(400).json({ error: "name and number are missing" });
+  }
+  if (!body.name) {
+    return res.status(400).json({ error: "name missing" });
+  }
+  if (!body.number) {
+    return res.status(400).json({ error: "number missing" });
+  }
+
+  const contact = {
+    name: body.name,
+    number: body.number,
+    id: generateId(),
+  };
+
+  contacts = contacts.concat(contact);
+  res.json(contact);
 });
 
 const PORT = 3001;
