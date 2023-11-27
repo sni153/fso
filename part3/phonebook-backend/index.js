@@ -1,8 +1,22 @@
 const express = require("express");
 const app = express();
 const morgan = require("morgan");
+
+// Middleware to parse JSON request bodies
 app.use(express.json());
-app.use(morgan('tiny'))
+
+// Morgan middleware to log HTTP requests in "tiny" format
+app.use(morgan("tiny"));
+
+// Define a custom token named "post-data" to access request body
+morgan.token("post-data", (req, res) => JSON.stringify(req.body));
+
+// Morgan middleware with custom format including request body
+app.use(
+  morgan(
+    ":method :url :status :res[content-length] - :response-time ms :post-data"
+  )
+);
 
 // Ignore the favicon.ico request by adding a middleware function
 // that intercepts the request and responds with a 204 status code.
