@@ -1,7 +1,8 @@
 const express = require("express");
 const app = express();
-
+const morgan = require("morgan");
 app.use(express.json());
+app.use(morgan('tiny'))
 
 // Ignore the favicon.ico request by adding a middleware function
 // that intercepts the request and responds with a 204 status code.
@@ -63,7 +64,7 @@ app.delete("/api/persons/:id", (req, res) => {
 const generateId = () => Math.floor(Math.random() * 99999);
 
 app.post("/api/persons", (req, res) => {
-  const names = contacts.map(contact => contact.name.toLowerCase())
+  const names = contacts.map((contact) => contact.name.toLowerCase());
   const body = req.body;
   const name = body.name.toLowerCase();
   const number = body.number;
@@ -78,7 +79,7 @@ app.post("/api/persons", (req, res) => {
     return res.status(400).json({ error: "number missing" });
   }
   if (names.includes(name)) {
-    return res.status(400).json({error: 'name must be unique'})
+    return res.status(400).json({ error: "name must be unique" });
   }
 
   const contact = {
