@@ -1,8 +1,10 @@
 // Import the express module and create an express application
 const express = require("express");
 const app = express();
-
+const cors = require("cors");
+app.use(cors());
 app.use(express.json());
+app.use(express.static('dist'))
 
 // Array of notes
 let notes = [
@@ -78,7 +80,7 @@ app.delete("/api/notes/:id", (request, response) => {
   response.status(204).end();
 });
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 // Start the server and listen for HTTP requests on port 3001
 app.listen(PORT, () => {
