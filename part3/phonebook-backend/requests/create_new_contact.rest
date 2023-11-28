@@ -14,3 +14,13 @@ Content-Type: application/json
     "name": "Steve Jobs",
     "number": "7684893" 
 }
+
+###
+
+POST https://phonebook-backend-2023.fly.dev/api/persons
+Content-Type: application/json
+
+{
+    "name": "Steve Jobs",
+    "number": "7684893" 
+}
