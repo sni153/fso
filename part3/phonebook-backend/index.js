@@ -2,10 +2,17 @@ const express = require("express");
 const app = express();
 const morgan = require("morgan");
 const cors = require("cors");
+
+// Enable Cross-Origin Resource Sharing (CORS)
+// Middleware to allow cross-origin requests for all routes.
 app.use(cors());
 
 // Middleware to parse JSON request bodies
 app.use(express.json());
+
+// Serve static files from the 'dist' directory
+// Middleware to host static content from the 'dist' folder.
+app.use(express.static('dist'))
 
 // Morgan middleware to log HTTP requests in "tiny" format
 app.use(morgan("tiny"));
