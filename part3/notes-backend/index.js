@@ -1,10 +1,16 @@
+require('dotenv').config()
+
 // Import the express module and create an express application
 const express = require("express");
 const app = express();
 const cors = require("cors");
+const Note = require('./models/note')
+
 app.use(cors());
 app.use(express.json());
-app.use(express.static('dist'))
+app.use(express.static("dist"));
+
+const mongoose = require("mongoose");
 
 // Array of notes
 let notes = [
@@ -34,9 +40,9 @@ app.get("/", (request, response) => {
 
 // Define a route for the "/api/notes" path
 app.get("/api/notes", (request, response) => {
-  // Send the "notes" array as a JSON response
-  response.json(notes);
-  // Express automatically sets the Content-Type header to "application/json" for the response.
+  Note.find({}).then((notes) => {
+    response.json(notes);
+  });
 });
 
 app.get("/api/notes/:id", (request, response) => {
