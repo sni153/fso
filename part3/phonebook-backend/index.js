@@ -1,7 +1,10 @@
+require('dotenv').config()
+
 const express = require("express");
 const app = express();
 const morgan = require("morgan");
 const cors = require("cors");
+const Person = require("./models/person")
 
 // Enable Cross-Origin Resource Sharing (CORS)
 // Middleware to allow cross-origin requests for all routes.
@@ -56,9 +59,17 @@ let contacts = [
   },
 ];
 
-app.get("/api/persons", (req, res) => {
-  res.json(contacts);
+
+// Define a route for the "/api/persons" path
+app.get("/api/persons", (request, response) => {
+  Person.find({}).then((persons) => {
+    response.json(persons);
+  });
 });
+
+// app.get("/api/persons", (req, res) => {
+//   res.json(contacts);
+// });
 
 app.get("/info", (req, res) => {
   let numberOfContacts = contacts.length;
