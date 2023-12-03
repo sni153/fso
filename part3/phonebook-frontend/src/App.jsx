@@ -98,7 +98,14 @@ const App = () => {
         setTimeout(() => {
           setMessage(null);
         }, 5000);
-      });
+      }).catch(error => {
+        setResult("error");
+        setMessage(error.response.data.error);
+        setTimeout(() => {
+          setMessage(null);
+        }, 5000);
+        console.log(error.response.data.error)
+      })
     }
   };
 

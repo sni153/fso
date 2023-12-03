@@ -5,3 +5,12 @@ content-type: application/json
     "name": "Sam Altman",
     "number": "911"
 }
+
+###
+PUT http://localhost:3001/api/persons/656becb1f7309dd0c3942c40 HTTP/1.1
+content-type: application/json
+
+{
+    "name": "lo",
+    "number": "911"
+}
