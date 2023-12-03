@@ -1,10 +1,10 @@
-require('dotenv').config()
+require("dotenv").config();
 
 const express = require("express");
 const app = express();
 const morgan = require("morgan");
 const cors = require("cors");
-const Person = require("./models/person")
+const Person = require("./models/person");
 
 // Enable Cross-Origin Resource Sharing (CORS)
 // Middleware to allow cross-origin requests for all routes.
@@ -15,7 +15,7 @@ app.use(express.json());
 
 // Serve static files from the 'dist' directory
 // Middleware to host static content from the 'dist' folder.
-app.use(express.static('dist'))
+app.use(express.static("dist"));
 
 // Morgan middleware to log HTTP requests in "tiny" format
 app.use(morgan("tiny"));
@@ -58,7 +58,6 @@ let contacts = [
     number: "39-23-6423122",
   },
 ];
-
 
 // Define a route for the "/api/persons" path
 app.get("/api/persons", (request, response) => {
@@ -116,14 +115,15 @@ app.post("/api/persons", (req, res) => {
     return res.status(400).json({ error: "name must be unique" });
   }
 
-  const contact = {
+  const contact = new Person({
     name: body.name,
     number: body.number,
-    id: generateId(),
-  };
+  });
 
-  contacts = contacts.concat(contact);
-  res.json(contact);
+  contact.save().then(savedPerson => {
+    console.log('savedPerson', savedPerson)
+    res.json(savedPerson)
+  })
 });
 
 const PORT = process.env.PORT || 3001;
