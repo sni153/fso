@@ -88,10 +88,17 @@ app.get("/api/persons/:id", (req, res) => {
   }
 });
 
-app.delete("/api/persons/:id", (req, res) => {
-  let id = Number(req.params.id);
-  contacts = contacts.filter((contact) => contact.id !== id);
-  res.status(204).end();
+// app.delete("/api/persons/:id", (req, res) => {
+//   let id = Number(req.params.id);
+//   contacts = contacts.filter((contact) => contact.id !== id);
+//   res.status(204).end();
+// });
+
+app.delete("/api/persons/:id", (req, res, next) => {
+  Person.findByIdAndDelete(req.params.id)
+    .then((result) => {
+      res.status(204).end();
+    })
 });
 
 const generateId = () => Math.floor(Math.random() * 99999);
