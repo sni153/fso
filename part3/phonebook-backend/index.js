@@ -78,14 +78,16 @@ app.get("/info", (req, res) => {
   );
 });
 
-app.get("/api/persons/:id", (req, res) => {
-  let id = Number(req.params.id);
-  let entry = contacts.find((contact) => contact.id === id);
-  if (entry) {
-    res.json(entry);
-  } else {
-    res.status(404).end();
-  }
+app.get("/api/persons/:id", (req, res, next) => {
+  Person.findById(req.params.id)
+    .then((person) => {
+      if (person) {
+        res.json(person);
+      } else {
+        res.status(404).end();
+      }
+    })
+    .catch((error) => next(error));
 });
 
 // app.delete("/api/persons/:id", (req, res) => {
