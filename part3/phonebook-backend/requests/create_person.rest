@@ -14,3 +14,21 @@ Content-Type: application/json
     "name": "SJ",
     "number": "7684893" 
 }
+
+###
+POST http://localhost:3001/api/persons/
+Content-Type: application/json
+
+{
+    "name": "Sam Altman",
+    "number": "1234556" 
+}
+
+### 
+POST http://localhost:3001/api/persons/
+Content-Type: application/json
+
+{
+    "name": "Sam Altman",
+    "number": "1-22334455" 
+}
