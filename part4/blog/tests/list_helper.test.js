@@ -73,7 +73,7 @@ describe('total likes', () => {
 	]
 
 	test('of empty list is zero', () => {
-		const result = listHelper.totalLikes(emptyList);
+		const result = listHelper.totalLikes(emptyList)
 		expect(result).toBe(0)
 	})
 
