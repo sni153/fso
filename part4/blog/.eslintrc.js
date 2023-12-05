@@ -26,6 +26,11 @@ module.exports = {
 		'semi': [
 			'error',
 			'never'
+		],
+		'object-curly-spacing': ['error', 'always'],
+		'padding-line-between-statements': [
+			'error',
+			{ 'blankLine': 'always', 'prev': '*', 'next': 'export' }
 		]
 	}
 }
