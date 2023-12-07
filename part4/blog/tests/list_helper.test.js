@@ -8,7 +8,6 @@ const blogs = require('../data/blogs')
 
 beforeEach(async () => {
 	await Blog.deleteMany({})
-
 	const blogObjects = blogs.map(blog => new Blog(blog))
 	const promiseArray = blogObjects.map(blog => blog.save())
 	await Promise.all(promiseArray)
@@ -63,6 +62,12 @@ describe('most likes', () => {
 		const response = await api.get('/api/blogs')
 		expect(response.body).toHaveLength(blogs.length)
 	})
+})
+
+test('unique identifier of a blog post is named id', async () => {
+	const response = await api.get('/api/blogs')
+	const firstBlog = response.body[0]
+	expect(firstBlog.id).toBeDefined()
 })
 
 afterAll(async () => {
