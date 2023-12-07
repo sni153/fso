@@ -1,14 +1,14 @@
 const listHelper = require('../utils/list_helper')
 const mongoose = require('mongoose')
+const helper = require('./test_helper')
 const supertest = require('supertest')
 const app = require('../app')
 const api = supertest(app)
 const Blog = require('../models/blog')
-const blogs = require('../data/blogs')
 
 beforeEach(async () => {
 	await Blog.deleteMany({})
-	const blogObjects = blogs.map(blog => new Blog(blog))
+	const blogObjects = helper.initialBlogs.map(blog => new Blog(blog))
 	const promiseArray = blogObjects.map(blog => blog.save())
 	await Promise.all(promiseArray)
 })
@@ -43,14 +43,14 @@ describe('total likes', () => {
 	})
 
 	test('of a bigger list is calculated right', () => {
-		const result = listHelper.totalLikes(blogs)
+		const result = listHelper.totalLikes(helper.initialBlogs)
 		expect(result).toBe(43)
 	})
 })
 
 describe('most likes', () => {
 	test('of a bigger list of blogs', () => {
-		const result = listHelper.favoriteBlog(blogs)
+		const result = listHelper.favoriteBlog(helper.initialBlogs)
 		expect(result).toEqual({
 			title: 'Canonical string reduction',
 			author: 'Edsger W. Dijkstra',
@@ -60,7 +60,7 @@ describe('most likes', () => {
 
 	test('returns the correct amount of blog posts', async () => {
 		const response = await api.get('/api/blogs')
-		expect(response.body).toHaveLength(blogs.length)
+		expect(response.body).toHaveLength(helper.initialBlogs.length)
 	})
 })
 
@@ -68,6 +68,33 @@ test('unique identifier of a blog post is named id', async () => {
 	const response = await api.get('/api/blogs')
 	const firstBlog = response.body[0]
 	expect(firstBlog.id).toBeDefined()
+})
+
+test('successfully creates a new blog post', async () => {
+	const newBlog = {
+		title: 'blog title',
+		author: 'blog author',
+		url: 'www.blog.com',
+		likes: 8,
+	}
+	const initialBlogs = await helper.initialBlogs
+	// Make the POST request and capture the response
+	await api
+		.post('/api/blogs')
+		.send(newBlog)
+		.expect(201)
+		.expect('Content-Type', /application\/json/)
+
+	// Retrieve all blogs from the database after addition
+	const blogsFromDB = await helper.blogsInDb()
+	const blogTitles = blogsFromDB.map(blog => blog.title)
+
+	// Verify that the returned blog ID is in the list of IDs from the database
+	expect(blogTitles).toContain(newBlog.title)
+
+	// Verify that the total number of blogs increased by one
+	const blogsAfterAddition = blogsFromDB
+	expect(blogsAfterAddition).toHaveLength(initialBlogs.length + 1)
 })
 
 afterAll(async () => {
