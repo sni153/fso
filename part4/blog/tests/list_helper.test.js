@@ -97,6 +97,23 @@ test('successfully creates a new blog post', async () => {
 	expect(blogsAfterAddition).toHaveLength(initialBlogs.length + 1)
 })
 
+test('missing likes property defaults to 0', async () => {
+	const newBlog = {
+		title: 'Sample Title',
+		author: 'Sample Author',
+		url: 'https://sampleurl.com'
+	}
+
+	// Send the new blog to the server
+	await api.post('/api/blogs').send(newBlog).expect(201)
+
+	// Fetch all blogs after creation
+	const blogsInDb = await Blog.find({})
+	const addedBlog = blogsInDb.find(blog => blog.title === newBlog.title)
+
+	expect(addedBlog.likes).toBe(0)
+})
+
 afterAll(async () => {
 	await mongoose.connection.close()
 })
