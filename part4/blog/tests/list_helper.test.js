@@ -57,46 +57,41 @@ describe('most likes', () => {
 			likes: 12
 		})
 	})
-
+	// 4.8: Blog list tests, step1
 	test('returns the correct amount of blog posts', async () => {
 		const response = await api.get('/api/blogs')
 		expect(response.body).toHaveLength(helper.initialBlogs.length)
 	})
 })
 
+// 4.9: Blog list tests, step2
 test('unique identifier of a blog post is named id', async () => {
 	const response = await api.get('/api/blogs')
 	const firstBlog = response.body[0]
 	expect(firstBlog.id).toBeDefined()
 })
 
-test('successfully creates a new blog post', async () => {
+// 4.10: Blog list tests, step3
+test('a valid blog can be added', async () => {
 	const newBlog = {
-		title: 'blog title',
+		title: 'learn to write tests',
 		author: 'blog author',
 		url: 'www.blog.com',
 		likes: 8,
 	}
-	const initialBlogs = await helper.initialBlogs
-	// Make the POST request and capture the response
+
 	await api
 		.post('/api/blogs')
 		.send(newBlog)
 		.expect(201)
 		.expect('Content-Type', /application\/json/)
-
-	// Retrieve all blogs from the database after addition
-	const blogsFromDB = await helper.blogsInDb()
-	const blogTitles = blogsFromDB.map(blog => blog.title)
-
-	// Verify that the returned blog ID is in the list of IDs from the database
-	expect(blogTitles).toContain(newBlog.title)
-
-	// Verify that the total number of blogs increased by one
-	const blogsAfterAddition = blogsFromDB
-	expect(blogsAfterAddition).toHaveLength(initialBlogs.length + 1)
+	const blogsAtEnd = await helper.blogsInDb()
+	expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1)
+	const blogTitles = blogsAtEnd.map(b => b.title)
+	expect(blogTitles).toContain('learn to write tests')
 })
 
+// 4.11*: Blog list tests, step4
 test('missing likes property defaults to 0', async () => {
 	const newBlog = {
 		title: 'Sample Title',
@@ -105,13 +100,39 @@ test('missing likes property defaults to 0', async () => {
 	}
 
 	// Send the new blog to the server
-	await api.post('/api/blogs').send(newBlog).expect(201)
+	await api
+		.post('/api/blogs')
+		.send(newBlog)
+		.expect(201)
+		.expect('Content-Type', /application\/json/)
 
 	// Fetch all blogs after creation
-	const blogsInDb = await Blog.find({})
+	const blogsInDb = await helper.blogsInDb()
 	const addedBlog = blogsInDb.find(blog => blog.title === newBlog.title)
-
 	expect(addedBlog.likes).toBe(0)
+})
+
+// 4.12*: Blog list tests, step5
+test('Returns 400 Bad Request for Missing Title in Creating New Blogs', async () => {
+	const newBlogMissingTitle = {
+		author: 'blog author',
+		url: 'www.blog.com',
+		likes: 8,
+	}
+
+	// Send the new blog to the server
+	await api.post('/api/blogs').send(newBlogMissingTitle).expect(400)
+})
+
+test('Returns 400 Bad Request for Missing URL in Creating New Blogs', async () => {
+	const newBlogMissingURL = {
+		title: 'blog title',
+		author: 'blog author',
+		likes: 8,
+	}
+
+	// Send the new blog to the server
+	await api.post('/api/blogs').send(newBlogMissingURL).expect(400)
 })
 
 afterAll(async () => {
