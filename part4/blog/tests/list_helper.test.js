@@ -135,6 +135,7 @@ test('Returns 400 Bad Request for Missing URL in Creating New Blogs', async () =
 	await api.post('/api/blogs').send(newBlogMissingURL).expect(400)
 })
 
+// 4.13 Blog list expansions, step1
 describe('deletion of a note', () => {
 	test('succeeds with a 204 status code if id is valid', async () => {
 		const blogsAtStart = await helper.blogsInDb()
@@ -149,6 +150,32 @@ describe('deletion of a note', () => {
 
 		const blogTitles = blogsAtEnd.map(blog => blog.title)
 		expect(blogTitles).not.toContain(blogToDelete.title)
+	})
+})
+
+// 4.14 Blog list expansions, step2
+describe('updating an individual blog post', () => {
+	test('succeeds with a 204 status code if id is valid', async () => {
+		const blogsAtStart = await helper.blogsInDb()
+		const blogToUpdate = blogsAtStart[0]
+		const originalLikes = blogToUpdate.likes // Store the original likes
+
+		const updatedLikes = 10 // Set likes to a specific value
+
+		const response = await api
+			.put(`/api/blogs/${blogToUpdate.id}`)
+			.send({ likes: updatedLikes })
+			.expect(200)
+		expect(response.body.likes).toBe(updatedLikes)
+		
+		// Reset the likes back to their original value
+		const resetResponse = await api
+			.put(`/api/blogs/${blogToUpdate.id}`)
+			.send({ likes: originalLikes })
+			.expect(200)
+
+		expect(resetResponse.body.likes).toBe(originalLikes)
+		console.log(resetResponse.body)
 	})
 })
 
