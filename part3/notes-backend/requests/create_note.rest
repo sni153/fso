@@ -11,6 +11,27 @@ POST http://localhost:3001/api/notes/ HTTP/1.1
 content-type: application/json
 
 {
-    "content": "lol",
-    "important": true
+    "content": "Browser can execute only Javascript",
+    "important": true,
+    "userId": "65726a44b0e068c1f2ccd1b2"
+}
+
+###
+POST http://localhost:3001/api/notes/ HTTP/1.1
+content-type: application/json
+
+{
+    "content": "User id of the note creator is at the start sent along the request",
+    "important": true,
+    "userId": "657269b2b0e068c1f2ccd1ae"
+}
+
+###
+POST http://localhost:3001/api/notes/ HTTP/1.1
+content-type: application/json
+
+{
+    "content": "The existing code and tests need to be changed when user is added to system",
+    "important": true,
+    "userId": "657269b2b0e068c1f2ccd1ae"
 }
