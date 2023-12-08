@@ -35,3 +35,13 @@ content-type: application/json
     "important": true,
     "userId": "657269b2b0e068c1f2ccd1ae"
 }
+
+### get the token from making a POST in login.rest first
+POST http://localhost:3001/api/notes/ HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1sdXVra2FpIiwiaWQiOiI2NTcyNjliMmIwZTA2OGMxZjJjY2QxYWUiLCJpYXQiOjE3MDIwNjU3NzJ9.APwPgyt5XbaxUyqF5qq8g6w067nvjmqlk1wurhzdpfg
+
+{
+    "content": "Single Page Apps use token authentication",
+    "important": true
+}
