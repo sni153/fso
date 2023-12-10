@@ -5,3 +5,12 @@ Content-Type: application/json
   "username": "scni",
   "password": "pikmin"
 }
+
+###
+POST http://localhost:3001/api/login
+Content-Type: application/json
+
+{
+  "username": "chef",
+  "password": "pikmin"
+}

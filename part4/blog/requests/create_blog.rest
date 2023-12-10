@@ -7,3 +7,15 @@ Content-Type: application/json
   "url": "www.blog.com",
   "likes": 4
 }
+
+### get the token from making a POST in login.rest first
+POST http://localhost:3001/api/blogs/ HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNoZWYiLCJpZCI6IjY1NzUxMWM4NDNjYzg0NzVhNTgxYmZlNSIsImlhdCI6MTcwMjE4MDYyMn0.ZkPFLOTNwWA-81mhU26YwY-cuexvG8kFIgJtoy0eNtQ
+
+{
+  "title": "blog app uses token authentication",
+  "author": "fso",
+  "url": "www.fso.com",
+  "likes": 8
+}
