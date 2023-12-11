@@ -18,9 +18,17 @@ const errorHandler = (error, request, response, next) => {
 	logger.error(error.message)
 
 	if (error.name === 'CastError') {
-		return response.status(400).send({ error: 'malformatted id' })
+		return response.status(400).send({ error: 'malformed id' })
 	} else if (error.name === 'ValidationError') {
 		return response.status(400).json({ error: error.message })
+	} else if (error.name === 'JsonWebTokenError') {
+		return response.status(401).json({
+			error: 'invalid token'
+		})
+	} else if (error.name === 'TokenExpiredError') {
+		return response.status(401).json({
+			error: 'token expired'
+		})
 	}
 
 	next(error)
@@ -31,22 +39,30 @@ const tokenExtractor = (request, response, next) => {
 	const authorization = request.get('authorization')
 	if (authorization && authorization.startsWith('Bearer')) {
 		const token = authorization.replace('Bearer ', '')
-		request.token = token // Set the extracted token in the request object
+		request.token = token
 	} else {
-		request.token = null // Set a default value if no token is found
+		request.token = null 
 	}
-	next() // Call next() after processing the token (whether found or not)
+	next()
 }
 
 const userExtractor = async (request, response, next) => {
 	const token = request.token
-	const decodedToken = jwt.verify(token, process.env.SECRET)
-	if (!decodedToken.id) {
-		return response.status(401).json({ error: 'token invalid' })
-	} else {
-		request.user = await User.findById(decodedToken.id)
+	if (!token) {
+		return next() // If there's no token, skip this middleware
 	}
-	next()
+
+	try {
+		const decodedToken = jwt.verify(token, process.env.SECRET)
+		if (!decodedToken.id) {
+			return response.status(401).json({ error: 'token invalid' })
+		} else {
+			request.user = await User.findById(decodedToken.id)
+			next()
+		}
+	} catch (error) {
+		return response.status(401).json({ error: 'token invalid' })
+	}
 }
 
 module.exports = {

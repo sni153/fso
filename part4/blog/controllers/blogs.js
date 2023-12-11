@@ -18,21 +18,19 @@ blogsRouter.get('/:id', async (request, response) => {
 
 blogsRouter.post('/', async (request, response) => {
 	const { title, author, url, likes } = request.body
-	if (!title || !url) {
-		return response.status(400).json({ error: 'Title and url are required' })
-	}
+	
 	const decodedToken = jwt.verify(request.token, process.env.SECRET)
 	if (!decodedToken.id) {
 		return response.status(401).json({ error: 'token invalid' })
 	}
+
 	const user = request.user
-		
 	const blog = new Blog({
 		url: url,
 		title: title,
 		author: author,
 		user: user.id,
-		likes: likes === undefined ? 0 : likes,
+		likes: likes,
 	})
 	const savedBlog = await blog.save()
 	user.blogs = user.blogs.concat(savedBlog._id)
