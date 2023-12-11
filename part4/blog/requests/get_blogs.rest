@@ -1,1 +1,8 @@
 GET http://localhost:3001/api/blogs/
+Content-Type: application/json
+Authorization: Bearer {{scniToken}}
+
+###
+GET http://localhost:3001/api/blogs/
+Content-Type: application/json
+Authorization: Bearer {{chefToken}}
