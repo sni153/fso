@@ -12,4 +12,16 @@ const getAll = () => {
   return request.then(response => response.data)
 }
 
-export default { getAll, setToken }
+const create = async (newObject) => {
+  const config = {
+    headers: { Authorization: token }, // Attach the token to the headers
+  }
+  try {
+    const response = await axios.post(baseUrl, newObject, config);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response.data.error); // Throw error for handling
+  }
+}
+
+export default { setToken, getAll, create }
