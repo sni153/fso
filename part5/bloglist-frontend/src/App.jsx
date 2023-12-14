@@ -1,6 +1,6 @@
 import loginService from './services/login'
 import blogService from './services/blogs'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import Notification from './components/Notification'
 import "./App.css"
@@ -8,6 +8,7 @@ import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
 
 const App = () => {
+  const blogFormRef = useRef()
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -91,6 +92,7 @@ const addBlog = (event) => {
       setTimeout(() => {
         setMessage(null);
       }, 5000);
+      blogFormRef.current.toggleVisibility()
     })
     .catch (error => {
       setResult('error')
@@ -126,7 +128,7 @@ const addBlog = (event) => {
           <p>
             {user.name} logged in <button onClick={handleLogout}>logout</button>
           </p>
-          <Togglable buttonLabel="new blog" >
+          <Togglable buttonLabel="new blog" ref={blogFormRef}>
             <BlogForm 
               title={title} 
               author={author} 
