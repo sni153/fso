@@ -3,13 +3,15 @@ import blogService from './services/blogs'
 import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import Notification from './components/Notification'
+import "./App.css"
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [errorMessage, setErrorMessage] = useState(null)
+  const [message, setMessage] = useState(null)
+  const [result, setResult] = useState(null);
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
@@ -28,9 +30,10 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (exception) {
-      setErrorMessage('Wrong credentials')
+      setResult('error')
+      setMessage('wrong username or password')
       setTimeout(() => {
-        setErrorMessage(null)
+        setMessage(null)
       }, 5000)
     }
   }
@@ -117,9 +120,18 @@ const addBlog = (event) => {
       setTitle('');
       setAuthor('');
       setUrl('');
+      setResult('success');
+      setMessage(`${blogObject.title} by ${blogObject.author} added`);
+      setTimeout(() => {
+        setMessage(null);
+      }, 5000);
     })
     .catch (error => {
-      console.error('Error adding blog:', error);
+      setResult('error')
+      setMessage(`Error adding blog: ${error}`)
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000)
     })
 }
 
@@ -140,7 +152,7 @@ const addBlog = (event) => {
 
   return (
     <div>
-      <Notification message={errorMessage}/>
+      <Notification message={message} result={result}/>
       {!user && loginForm()}
       {user && (
         <div>
