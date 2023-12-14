@@ -5,11 +5,9 @@ import Blog from './components/Blog'
 import Notification from './components/Notification'
 import "./App.css"
 import BlogForm from './components/BlogForm'
+import Togglable from './components/Togglable'
 
 const App = () => {
-  const [blogFormVisible, setBlogFormVisible] = useState(false)
-  const hideWhenVisible = { display: blogFormVisible ? 'none' : '' }
-  const showWhenVisible = { display: blogFormVisible ? '' : 'none' }
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -128,21 +126,17 @@ const addBlog = (event) => {
           <p>
             {user.name} logged in <button onClick={handleLogout}>logout</button>
           </p>
-          <div style={hideWhenVisible}>
-            <button onClick={() => setBlogFormVisible(true)}>new blog</button>
-        </div>
-        <div style={showWhenVisible}>
-          <BlogForm 
-            title={title} 
-            author={author} 
-            url={url}
-            handleSubmit={addBlog}
-            setTitle={setTitle}
-            setAuthor={setAuthor}
-            setUrl={setUrl}>
-          </BlogForm>
-          <button onClick={() => setBlogFormVisible(false)}>cancel</button>
-        </div>
+          <Togglable buttonLabel="new blog" >
+            <BlogForm 
+              title={title} 
+              author={author} 
+              url={url}
+              handleSubmit={addBlog}
+              setTitle={setTitle}
+              setAuthor={setAuthor}
+              setUrl={setUrl}>
+            </BlogForm>
+          </Togglable>
           {blogs.map(blog =>
             <Blog key={blog.id} blog={blog} />
           )}
