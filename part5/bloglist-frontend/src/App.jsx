@@ -46,6 +46,24 @@ const App = () => {
     setUser(null)
   }
 
+  const handleLike = async (likedBlog) => {
+    try {
+      blogService.setToken(user.token);
+      const updatedBlog = {
+        ...likedBlog,
+        likes: likedBlog.likes + 1,
+      };
+      await blogService.update(updatedBlog, likedBlog.id);
+  
+      // Update the blogs state, then re-sort by likes in descending order
+      const updatedBlogs = blogs.map(blog => (blog.id === likedBlog.id ? updatedBlog : blog));
+      const sortedUpdatedBlogs = updatedBlogs.sort((a, b) => b.likes - a.likes);
+      setBlogs(sortedUpdatedBlogs);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  
 const loginForm = () => (
   <form onSubmit={handleLogin}>
     <h1>log in to application</h1>
@@ -118,6 +136,8 @@ const addBlog = (event) => {
     }
   }, [])
 
+  const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes);
+
   return (
     <div>
       <Notification message={message} result={result}/>
@@ -139,8 +159,8 @@ const addBlog = (event) => {
               setUrl={setUrl}>
             </BlogForm>
           </Togglable>
-          {blogs.map(blog =>
-            <Blog key={blog.id} blog={blog} user={user} />
+          {sortedBlogs.map(blog =>
+            <Blog key={blog.id} blog={blog} user={user} onClick={handleLike}/>
           )}
         </div>
       )}
