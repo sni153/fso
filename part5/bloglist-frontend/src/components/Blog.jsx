@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import blogService from '../services/blogs'
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog: initialBlog, user }) => {
+  const [blog, setBlog] = useState(initialBlog);
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -15,6 +17,20 @@ const Blog = ({ blog }) => {
 
   const toggleVisibility = () => {
     setVisible(!visible);
+  };
+
+  const addLike = async () => {
+    try {
+      blogService.setToken(user.token);
+      const updatedBlog = {
+        ...blog,
+        likes: blog.likes + 1,
+      };
+      await blogService.update(updatedBlog, updatedBlog.id); // Use updatedBlog.id
+      setBlog(updatedBlog); // Update the local state with the updated blog object
+    } catch (error) {
+        console.log(error)
+    }
   };
 
   return (
@@ -32,7 +48,7 @@ const Blog = ({ blog }) => {
           <p>{blog.url}</p>
           <p>
             likes {blog.likes}
-            <button className="button">like</button>
+            <button className="button" onClick={addLike}>like</button>
           </p>
           <p>{blog.author}</p>
         </div>
