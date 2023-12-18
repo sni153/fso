@@ -21,3 +21,8 @@
   padding: 10px;
   margin-bottom: 10px;
 }
+
+.remove {
+  background-color: blue;
+  color: white;
+}

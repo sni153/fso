@@ -63,6 +63,19 @@ const App = () => {
       console.log(error);
     }
   };
+
+  const handleRemoveBlog = async (blogToRemove) => {
+    if (window.confirm(`Remove ${blogToRemove.title} by ${blogToRemove.author}`)) {
+      try {
+        blogService.setToken(user.token);
+        await blogService.removeBlog(blogToRemove.id);
+        const updatedBlogs = blogs.filter((blog) => blog.id !== blogToRemove.id);
+        setBlogs(updatedBlogs);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  }
   
 const loginForm = () => (
   <form onSubmit={handleLogin}>
@@ -132,7 +145,7 @@ const addBlog = (event) => {
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
-      blogService.setToken(user.setToken)
+      blogService.setToken(user.token)
     }
   }, [])
 
@@ -160,7 +173,7 @@ const addBlog = (event) => {
             </BlogForm>
           </Togglable>
           {sortedBlogs.map(blog =>
-            <Blog key={blog.id} blog={blog} user={user} onClick={handleLike}/>
+            <Blog key={blog.id} blog={blog} user={user} onClick={handleLike} onRemove={handleRemoveBlog}/>
           )}
         </div>
       )}
