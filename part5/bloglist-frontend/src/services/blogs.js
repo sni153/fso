@@ -17,16 +17,16 @@ const create = async (newObject) => {
     headers: { Authorization: token }, // Attach the token to the headers
   }
   try {
-    const response = await axios.post(baseUrl, newObject, config);
-    return response.data;
+    const response = await axios.post(baseUrl, newObject, config)
+    return response.data
   } catch (error) {
-    throw new Error(error.response.data.error); // Throw error for handling
+    throw new Error(error.response.data.error) // Throw error for handling
   }
 }
 
 const update = async (newObject, blogId) => {
   const config = {
-    headers: { Authorization: token }, 
+    headers: { Authorization: token },
   }
   try {
     const response = await axios.put(`${baseUrl}/${blogId}`, newObject, config)
