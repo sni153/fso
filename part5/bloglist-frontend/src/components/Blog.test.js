@@ -84,3 +84,48 @@ test('clicking the view button calls event handler once', async () => {
   // Check if the onView event handler has been called
   expect(mockOnViewHandler).toHaveBeenCalled()
 })
+
+// Test to check if blog details (URL and likes) are shown on button click
+test('blog details (URL and likes) are shown when the button controlling the details is clicked', async () => {
+  // Initial blog data
+  const initialBlog = {
+    id: '1111',
+    title: 'Test Blog',
+    author: 'Test Author',
+    url: 'http://testurl.com',
+    likes: 10,
+    user: {
+      id: '2222',
+    },
+  }
+
+  // Logged-in user data
+  const loggedInUser = {
+    username: 'testuser',
+    name: 'Test User',
+    id: '456',
+  }
+
+  // Render the Blog component
+  render(
+    <Blog
+      blog={initialBlog}
+      user={loggedInUser}
+      onLike={jest.fn()}
+      onRemove={jest.fn()}
+      onView={jest.fn()}
+    />
+  )
+
+  // Get the view button and trigger a click event
+  const button = screen.getByTestId('toggle-button')
+  await userEvent.click(button)
+
+  // Check if the blog's URL and number of likes are shown
+  const blogUrl = screen.getByTestId('blog-url')
+  const blogLikes = screen.getByTestId('blog-likes')
+
+  expect(blogUrl).toBeInTheDocument()
+  expect(blogLikes).toBeInTheDocument()
+})
+
