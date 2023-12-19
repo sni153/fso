@@ -16,9 +16,9 @@ const App = () => {
   const [user, setUser] = useState(null)
   const [message, setMessage] = useState(null)
   const [result, setResult] = useState(null)
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
+  // const [title, setTitle] = useState('')
+  // const [author, setAuthor] = useState('')
+  // const [url, setUrl] = useState('')
   const [loginVisible, setLoginVisible] = useState(false)
 
   const loginUser = async (event) => {
@@ -79,36 +79,24 @@ const App = () => {
     }
   }
 
-  const addBlog = (event) => {
+  const handleCreateBlog = async (blogObject) => {
     blogService.setToken(user.token)
-    event.preventDefault()
-    const blogObject = {
-      title,
-      author,
-      url
+    try {
+      const newBlog = await blogService.create(blogObject)
+      setBlogs(blogs.concat(newBlog))
+      setResult('success')
+      setMessage(`${blogObject.title} by ${blogObject.author} added`)
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000)
+      blogFormRef.current.toggleVisibility()
+    } catch (error) {
+      setResult('error')
+      setMessage(`Error adding blog: ${error}`)
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000)
     }
-
-    blogService
-      .create(blogObject)
-      .then(returnedBlog => {
-        setBlogs(blogs.concat(returnedBlog))
-        setTitle('')
-        setAuthor('')
-        setUrl('')
-        setResult('success')
-        setMessage(`${blogObject.title} by ${blogObject.author} added`)
-        setTimeout(() => {
-          setMessage(null)
-        }, 5000)
-        blogFormRef.current.toggleVisibility()
-      })
-      .catch (error => {
-        setResult('error')
-        setMessage(`Error adding blog: ${error}`)
-        setTimeout(() => {
-          setMessage(null)
-        }, 5000)
-      })
   }
 
   useEffect(() => {
@@ -150,13 +138,8 @@ const App = () => {
           </p>
           <Togglable buttonLabel="create new blog" ref={blogFormRef}>
             <BlogForm
-              title={title}
-              author={author}
-              url={url}
-              handleSubmit={addBlog}
-              setTitle={setTitle}
-              setAuthor={setAuthor}
-              setUrl={setUrl}>
+              onCreateBlog={handleCreateBlog}
+            >
             </BlogForm>
           </Togglable>
           {sortedBlogs.map(blog =>

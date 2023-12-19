@@ -3,6 +3,7 @@ import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import Blog from './Blog'
+import BlogForm from './BlogForm'
 
 // Test to check if blog title, author, and likes render by default
 test('renders blog title, author, and likes by default', () => {
@@ -171,4 +172,30 @@ test('like button click calls event handler twice', async () => {
   expect(mockOnLikeHandler).toHaveBeenCalledTimes(2)
 })
 
+test('form calls handleSubmit with correct details when creating a new blog', async () => {
+  const user = userEvent.setup()
+  const handleCreateBlog = jest.fn()
 
+  render(<BlogForm onCreateBlog={handleCreateBlog} />)
+
+  const inputValues = {
+    title: 'Test Title',
+    author: 'Test Author',
+    url: 'http://testurl.com',
+  }
+
+  const inputTitle = screen.getByPlaceholderText('Enter title...')
+  const inputAuthor = screen.getByPlaceholderText('Enter author...')
+  const inputUrl = screen.getByPlaceholderText('Enter URL...')
+  const createButton = screen.getByText('create')
+
+  await user.type(inputTitle, inputValues.title)
+  await user.type(inputAuthor, inputValues.author)
+  await user.type(inputUrl, inputValues.url)
+  await user.click(createButton)
+
+  expect(handleCreateBlog).toHaveBeenCalledTimes(1)
+  expect(handleCreateBlog.mock.calls[0][0].title).toBe(inputValues.title)
+  expect(handleCreateBlog.mock.calls[0][0].author).toBe(inputValues.author)
+  expect(handleCreateBlog.mock.calls[0][0].url).toBe(inputValues.url)
+})
