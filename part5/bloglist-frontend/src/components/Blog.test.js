@@ -129,3 +129,46 @@ test('blog details (URL and likes) are shown when the button controlling the det
   expect(blogLikes).toBeInTheDocument()
 })
 
+// Test to check if the like button click triggers event handler twice
+test('like button click calls event handler twice', async () => {
+  // Initial blog data
+  const initialBlog = {
+    id: '1111',
+    title: 'Test Blog',
+    author: 'Test Author',
+    url: 'http://testurl.com',
+    likes: 10,
+    user: {
+      id: '2222',
+    },
+  }
+
+  // Logged-in user data
+  const loggedInUser = {
+    username: 'testuser',
+    name: 'Test User',
+    id: '456',
+  }
+
+  // Mock event handler for onLike
+  const mockOnLikeHandler = jest.fn()
+
+  // Render the Blog component with necessary props and event handlers
+  render(
+    <Blog
+      blog={initialBlog}
+      user={loggedInUser}
+      onLike={mockOnLikeHandler} // Pass the mock handler for onLike
+    />
+  )
+
+  // Get the like button and trigger a click event twice
+  const likeButton = screen.getByText('like')
+  await userEvent.click(likeButton)
+  await userEvent.click(likeButton)
+
+  // Check if the onLike event handler has been called twice
+  expect(mockOnLikeHandler).toHaveBeenCalledTimes(2)
+})
+
+
