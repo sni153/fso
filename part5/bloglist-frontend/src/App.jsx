@@ -160,7 +160,7 @@ const App = () => {
             </BlogForm>
           </Togglable>
           {sortedBlogs.map(blog =>
-            <Blog key={blog.id} blog={blog} user={user} onClick={handleLike} onRemove={handleRemoveBlog}/>
+            <Blog key={blog.id} blog={blog} user={user} onLike={handleLike} onRemove={handleRemoveBlog}/>
           )}
         </div>
       )}

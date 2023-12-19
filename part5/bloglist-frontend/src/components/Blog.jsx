@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import blogService from '../services/blogs'
 
-const Blog = ({ blog: initialBlog, user, onRemove }) => {
-  const [blog, setBlog] = useState(initialBlog)
+const Blog = ({ blog, user, onLike, onRemove, onView }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -12,24 +11,17 @@ const Blog = ({ blog: initialBlog, user, onRemove }) => {
   }
 
   const [visible, setVisible] = useState(false)
-  const hideWhenVisible = { display: visible ? 'none' : '' }
   const showWhenVisible = { display: visible ? '' : 'none' }
+
+  const handleLike = () => {
+    onLike(blog)
+  }
 
   const toggleVisibility = () => {
     setVisible(!visible)
-  }
-
-  const addLike = async () => {
-    try {
-      blogService.setToken(user.token)
-      const updatedBlog = {
-        ...blog,
-        likes: blog.likes + 1,
-      }
-      await blogService.update(updatedBlog, updatedBlog.id) // Use updatedBlog.id
-      setBlog(updatedBlog) // Update the local state with the updated blog object
-    } catch (error) {
-      console.log(error)
+    // Pass visibility status to onView prop, if needed
+    if (onView) {
+      onView(!visible)
     }
   }
 
@@ -43,24 +35,24 @@ const Blog = ({ blog: initialBlog, user, onRemove }) => {
   }
 
   return (
-    <div style={blogStyle}>
+    <div style={blogStyle} data-testid="blog">
       <div>
-        <div style={hideWhenVisible}>
+        <div data-testid="title-author">
           {blog.title} {blog.author}
-          <button className="button" onClick={toggleVisibility}>view</button>
+          <button className="button" onClick={toggleVisibility} data-testid="toggle-button">
+            {visible ? 'hide' : 'view'}
+          </button>
         </div>
-        <div style={showWhenVisible}>
-          <div>
-            {blog.title} {blog.author}
-            <button className="button" onClick={toggleVisibility}>hide</button>
-          </div>
-          <p>{blog.url}</p>
-          <p>
+        <div style={showWhenVisible} data-testid="blog-details">
+          <p data-testid="blog-url">{blog.url}</p>
+          <p data-testid="blog-likes">
             likes {blog.likes}
-            <button className="button" onClick={addLike}>like</button>
+            <button className="button" onClick={handleLike}>like</button>
           </p>
-          <p>{blog.author}</p>
-          <RemoveBlogButton />
+          <div>{blog.user.username}</div>
+          {user.username === blog.user.username && (
+            <button className="remove" onClick={() => onRemove(blog)}>remove</button>
+          )}
         </div>
       </div>
     </div>
