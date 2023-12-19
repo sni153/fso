@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import blogService from '../services/blogs'
 
 const Blog = ({ blog, user, onLike, onRemove, onView }) => {
   const blogStyle = {
@@ -23,15 +22,6 @@ const Blog = ({ blog, user, onLike, onRemove, onView }) => {
     if (onView) {
       onView(!visible)
     }
-  }
-
-  const RemoveBlogButton = () => {
-    const isUserTheAuthor = user.username === blog.user.username
-    return (
-      isUserTheAuthor && (
-        <button className="remove" onClick={() => onRemove(blog)}>remove</button>
-      )
-    )
   }
 
   return (

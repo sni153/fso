@@ -36,6 +36,10 @@ test('renders blog title, author, and likes by default', () => {
   const blogLikes = screen.queryByTestId('blog-likes')
   expect(blogLikes).toBeInTheDocument()
   expect(blogLikes).toHaveTextContent('likes 10')
+
+  // Check if blog details section is hidden by default
+  const blogDetails = screen.queryByTestId('blog-details')
+  expect(blogDetails).toHaveStyle({ display: 'none' }) // Check if it's hidden by default
 })
 
 // Test to check if clicking the view button calls the onView event handler once
