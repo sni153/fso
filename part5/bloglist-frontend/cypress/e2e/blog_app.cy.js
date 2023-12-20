@@ -6,7 +6,13 @@ describe('Blog app', function() {
       username: 'chef',
       password: 'pikmin'
     }
+    const newUser = {
+      name: 'New User',
+      username: 'newUser',
+      password: 'test123'
+    }
     cy.request('POST', 'http://localhost:3001/api/users/', user)
+    cy.request('POST', 'http://localhost:3001/api/users/', newUser)
     cy.visit('http://localhost:5173')
   })
 
@@ -70,6 +76,28 @@ describe('Blog app', function() {
       cy.reload()
       cy.contains('view').click()
       cy.contains('delete').click()
+    })
+
+    it('User can create a blog and only the creator can see/delete it', function() {
+      // beforeEach logs in as 'chef', let's create a blog
+      cy.contains('create new blog').click()
+      cy.get('#title').type('blog title')
+      cy.get('#author').type('blog author')
+      cy.get('#url').type('https://blog.com')
+      cy.get('#createButton').click()
+      cy.contains('blog title by blog author added')
+
+      // Logout as 'chef'
+      cy.contains('logout').click()
+
+      // Login as 'newUser'
+      cy.get('#username').type('newUser')
+      cy.get('#password').type('test123')
+      cy.get('#login-button').click()
+
+      // Find the blog created by 'chef' and verify the delete button isn't visible
+      cy.contains('view').click()
+      cy.contains('delete').should('not.exist')
     })
   })
 })
