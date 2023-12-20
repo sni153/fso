@@ -16,10 +16,6 @@ const App = () => {
   const [user, setUser] = useState(null)
   const [message, setMessage] = useState(null)
   const [result, setResult] = useState(null)
-  // const [title, setTitle] = useState('')
-  // const [author, setAuthor] = useState('')
-  // const [url, setUrl] = useState('')
-  const [loginVisible, setLoginVisible] = useState(false)
 
   const loginUser = async (event) => {
     event.preventDefault()
@@ -66,13 +62,13 @@ const App = () => {
     }
   }
 
-  const handleRemoveBlog = async (blogToRemove) => {
-    if (window.confirm(`Remove ${blogToRemove.title} by ${blogToRemove.author}`)) {
+  const handleDeleteBlog = async (blogToDelete) => {
+    if (window.confirm(`Delete ${blogToDelete.title} by ${blogToDelete.author}`)) {
       try {
         blogService.setToken(user.token)
-        await blogService.removeBlog(blogToRemove.id)
-        const updatedBlogs = blogs.filter((blog) => blog.id !== blogToRemove.id)
-        setBlogs(updatedBlogs)
+        await blogService.deleteBlog(blogToDelete.id)
+        const response = await blogService.getAll()
+        setBlogs(response)
       } catch (error) {
         console.log(error)
       }
@@ -141,7 +137,13 @@ const App = () => {
             </BlogForm>
           </Togglable>
           {sortedBlogs.map(blog =>
-            <Blog key={blog.id} blog={blog} user={user} onLike={handleLike} onRemove={handleRemoveBlog}/>
+            <Blog
+              key={blog.id}
+              blog={blog}
+              user={user}
+              onLike={handleLike}
+              onDelete={handleDeleteBlog}
+            />
           )}
         </div>
       )}

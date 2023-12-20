@@ -73,7 +73,7 @@ test('clicking the view button calls event handler once', async () => {
       blog={initialBlog}
       user={loggedInUser}
       onLike={jest.fn()} // Mock onLike handler
-      onRemove={jest.fn()} // Mock onRemove handler
+      onDelete={jest.fn()} // Mock onDelete handler
       onView={mockOnViewHandler} // Pass the mock handler for onView
     />
   )
@@ -113,7 +113,7 @@ test('blog details (URL and likes) are shown when the button controlling the det
       blog={initialBlog}
       user={loggedInUser}
       onLike={jest.fn()}
-      onRemove={jest.fn()}
+      onDelete={jest.fn()}
       onView={jest.fn()}
     />
   )

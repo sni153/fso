@@ -60,5 +60,16 @@ describe('Blog app', function() {
       cy.get('.likeButton').click()
       cy.contains('likes 1')
     })
+
+    it('A blog can be deleted by the user who created it', function() {
+      cy.contains('create new blog').click()
+      cy.get('#title').type('blog title')
+      cy.get('#author').type('blog author')
+      cy.get('#url').type('https://blog.com')
+      cy.get('#createButton').click()
+      cy.reload()
+      cy.contains('view').click()
+      cy.contains('delete').click()
+    })
   })
 })

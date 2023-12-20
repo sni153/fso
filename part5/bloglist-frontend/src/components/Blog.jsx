@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-const Blog = ({ blog, user, onLike, onRemove, onView }) => {
+const Blog = ({ blog, user, onLike, onDelete, onView }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -18,7 +18,6 @@ const Blog = ({ blog, user, onLike, onRemove, onView }) => {
 
   const toggleVisibility = () => {
     setVisible(!visible)
-    // Pass visibility status to onView prop, if needed
     if (onView) {
       onView(!visible)
     }
@@ -29,7 +28,11 @@ const Blog = ({ blog, user, onLike, onRemove, onView }) => {
       <div>
         <div data-testid="titleAuthor">
           {blog.title} {blog.author}
-          <button className="button" onClick={toggleVisibility} data-testid="toggle-button">
+          <button
+            className="button"
+            onClick={toggleVisibility}
+            data-testid="toggle-button"
+          >
             {visible ? 'hide' : 'view'}
           </button>
         </div>
@@ -41,7 +44,11 @@ const Blog = ({ blog, user, onLike, onRemove, onView }) => {
           </p>
           <div>{blog.user.username}</div>
           {user.username === blog.user.username && (
-            <button className="remove" onClick={() => onRemove(blog)}>remove</button>
+            <button
+              className="delete"
+              onClick={() => onDelete(blog)}
+            >delete
+            </button>
           )}
         </div>
       </div>
