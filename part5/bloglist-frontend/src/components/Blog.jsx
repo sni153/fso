@@ -27,17 +27,17 @@ const Blog = ({ blog, user, onLike, onRemove, onView }) => {
   return (
     <div style={blogStyle} data-testid="blog">
       <div>
-        <div data-testid="title-author">
+        <div data-testid="titleAuthor">
           {blog.title} {blog.author}
           <button className="button" onClick={toggleVisibility} data-testid="toggle-button">
             {visible ? 'hide' : 'view'}
           </button>
         </div>
-        <div style={showWhenVisible} data-testid="blog-details">
-          <p data-testid="blog-url">{blog.url}</p>
-          <p data-testid="blog-likes">
+        <div style={showWhenVisible} data-testid="blogDetails">
+          <p data-testid="blogUrl">{blog.url}</p>
+          <p data-testid="blogLikes">
             likes {blog.likes}
-            <button className="button" onClick={handleLike}>like</button>
+            <button className="button likeButton" onClick={handleLike}>like</button>
           </p>
           <div>{blog.user.username}</div>
           {user.username === blog.user.username && (

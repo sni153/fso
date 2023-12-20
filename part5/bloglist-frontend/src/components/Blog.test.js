@@ -30,16 +30,16 @@ test('renders blog title, author, and likes by default', () => {
   render(<Blog blog={initialBlog} user={user} />)
 
   // Check if title and author are present
-  const titleAuthor = screen.getByTestId('title-author')
+  const titleAuthor = screen.getByTestId('titleAuthor')
   expect(titleAuthor).toHaveTextContent('Test Blog Test Author')
 
-  // Check if blog-likes exists and its text content
-  const blogLikes = screen.queryByTestId('blog-likes')
+  // Check if blogLikes exists and its text content
+  const blogLikes = screen.queryByTestId('blogLikes')
   expect(blogLikes).toBeInTheDocument()
   expect(blogLikes).toHaveTextContent('likes 10')
 
   // Check if blog details section is hidden by default
-  const blogDetails = screen.queryByTestId('blog-details')
+  const blogDetails = screen.queryByTestId('blogDetails')
   expect(blogDetails).toHaveStyle({ display: 'none' }) // Check if it's hidden by default
 })
 
@@ -123,8 +123,8 @@ test('blog details (URL and likes) are shown when the button controlling the det
   await userEvent.click(button)
 
   // Check if the blog's URL and number of likes are shown
-  const blogUrl = screen.getByTestId('blog-url')
-  const blogLikes = screen.getByTestId('blog-likes')
+  const blogUrl = screen.getByTestId('blogUrl')
+  const blogLikes = screen.getByTestId('blogLikes')
 
   expect(blogUrl).toBeInTheDocument()
   expect(blogLikes).toBeInTheDocument()
