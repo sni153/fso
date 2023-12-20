@@ -99,5 +99,29 @@ describe('Blog app', function() {
       cy.contains('view').click()
       cy.contains('delete').should('not.exist')
     })
+
+    it('Blogs are ordered by likes', function() {
+      cy.contains('create new blog').click()
+      cy.get('#title').type('Blog with most likes')
+      cy.get('#author').type('Author')
+      cy.get('#url').type('https://blog.com')
+      cy.get('#createButton').click()
+
+      cy.contains('create new blog').click()
+      cy.get('#title').type('Blog with fewer likes')
+      cy.get('#author').type('Author')
+      cy.get('#url').type('https://blog.com')
+      cy.get('#createButton').click()
+
+      // Click "view" for the blog with most likes
+      cy.contains('Blog with most likes').parent().find('button').contains('view').click()
+
+      // Click the "like" button for the blog with most likes
+      cy.contains('likes 0').parent().find('button').contains('like').click()
+
+      // Assert the order after the like
+      cy.get('.blog').eq(0).should('contain', 'Blog with most likes')
+      cy.get('.blog').eq(1).should('contain', 'Blog with fewer likes')
+    })
   })
 })

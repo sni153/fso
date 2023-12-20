@@ -25,7 +25,7 @@ const Blog = ({ blog, user, onLike, onDelete, onView }) => {
 
   return (
     <div style={blogStyle} data-testid="blog">
-      <div>
+      <div className="blog">
         <div data-testid="titleAuthor">
           {blog.title} {blog.author}
           <button
