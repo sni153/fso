@@ -120,15 +120,13 @@ const App = () => {
     <div>
       <Notification message={message} result={result}/>
       {!user && (
-        <Togglable buttonLabel="show login form">
-          <LoginForm
-            username={username}
-            password={password}
-            setUsername={setUsername}
-            setPassword={setPassword}
-            handleSubmit={loginUser}
-          />
-        </Togglable>
+        <LoginForm
+          username={username}
+          password={password}
+          setUsername={setUsername}
+          setPassword={setPassword}
+          handleSubmit={loginUser}
+        />
       )}
       {user && (
         <div>
