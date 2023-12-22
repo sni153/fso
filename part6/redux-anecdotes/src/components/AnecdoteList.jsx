@@ -7,12 +7,12 @@ const AnecdoteList = () => {
   const filterTerm = useSelector(state => state.filter); // Accessing the filter term from the Redux store state
 
   // Filtering anecdotes based on the filter term
-  const filteredAnecdotes = anecdotes.filter(anecdote =>
-    anecdote.content.toLowerCase().includes(filterTerm.toLowerCase())
-  );
+  const filteredAnecdotes = anecdotes.filter(anecdote => {
+    return anecdote.content.toLowerCase().includes(filterTerm.toLowerCase())
+   });
 
   // Function to dispatch the voteAnecdote action when voting on an anecdote
-  const vote = (id) => {
+  const handleVote = (id) => {
     dispatch(voteAnecdote(id)); // Dispatching voteAnecdote action with the anecdote ID
   };
 
@@ -27,7 +27,7 @@ const AnecdoteList = () => {
           <div>
             has {anecdote.votes}
             {/* Button to vote on an anecdote */}
-            <button onClick={() => vote(anecdote.id)}>vote</button>
+            <button onClick={() => handleVote(anecdote.id)}>vote</button>
           </div>
         </div>
       )}
