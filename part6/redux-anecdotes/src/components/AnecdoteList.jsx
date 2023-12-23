@@ -1,4 +1,5 @@
 import { voteAnecdote } from '../reducers/anecdoteReducer'; // Importing the action creator for voting on an anecdote
+import { updateNotification, clearNotification } from '../reducers/notificationReducer'; // Import the notification actions
 import { useSelector, useDispatch } from 'react-redux'; // Importing hooks for accessing Redux store state and dispatch function
 
 const AnecdoteList = () => {
@@ -13,7 +14,17 @@ const AnecdoteList = () => {
 
   // Function to dispatch the voteAnecdote action when voting on an anecdote
   const handleVote = (id) => {
-    dispatch(voteAnecdote(id)); // Dispatching voteAnecdote action with the anecdote ID
+    const votedAnecdote = anecdotes.find(anecdote => anecdote.id === id); // Find the voted anecdote by its ID
+    // Dispatch notification action to set the notification message
+    dispatch(updateNotification(`you voted '${votedAnecdote.content}'`));
+
+    // Dispatch voting action
+    dispatch(voteAnecdote(id));
+
+    // Remove the notification after 5 seconds
+    setTimeout(() => {
+      dispatch(clearNotification());
+    }, 5000);
   };
 
   return (
