@@ -22,10 +22,6 @@ const anecdoteSlice = createSlice({
           .sort((a, b) => b.votes - a.votes); // Sort by votes in descending order
       }
     },
-    // Reducer function to create a new anecdote
-    createAnecdote: (state, action) => {
-      state.push(action.payload) // Add the new anecdote to the state
-    },
     // Reducer function to append an existing anecdote
     appendAnecdote: (state, action) => {
       state.push(action.payload) // Add the existing anecdote to the state
@@ -38,13 +34,21 @@ const anecdoteSlice = createSlice({
 });
 
 // Destructure and export the actions from the slice
-export const { voteAnecdote, createAnecdote, appendAnecdote, setAnecdotes } = anecdoteSlice.actions;
+export const { voteAnecdote, appendAnecdote, setAnecdotes } = anecdoteSlice.actions;
 
 // Async action creator to initialize anecdotes from the server
 export const initializeAnecdotes = () => {
   return async dispatch => {
     const anecdotes = await anecdoteService.getAll(); // Fetch anecdotes from the service
     dispatch(setAnecdotes(anecdotes)); // Dispatch an action to set fetched anecdotes in the state
+  }
+}
+
+// Async action creator function to create a new anecdote
+export const createAnecdote = content => {
+  return async dispatch => {
+    const newAnecdote = await anecdoteService.createNew(content); // Create a new anecdote
+    dispatch(appendAnecdote(newAnecdote)); // Dispatch an action to append the new anecdote to the state
   }
 }
 

@@ -1,23 +1,41 @@
+// Import the useDispatch hook from react-redux. This hook will give us the dispatch function from our Redux store.
 import { useDispatch } from 'react-redux'
-import { createAnecdote } from '../reducers/anecdoteReducer'
-import { updateNotification, clearNotification } from '../reducers/notificationReducer'
-import anecdoteService from '../services/anecdotes'
 
+// Import the createAnecdote action creator from our anecdoteReducer.
+import { createAnecdote } from '../reducers/anecdoteReducer'
+
+// Import the updateNotification and clearNotification action creators from our notificationReducer.
+import { updateNotification, clearNotification } from '../reducers/notificationReducer'
+
+// Define the AnecdoteForm component.
 const AnecdoteForm = () => {
+  // Get the dispatch function from our Redux store using the useDispatch hook.
   const dispatch = useDispatch()
 
+  // Define the addAnecdote function. This function will be called when the form is submitted.
   const addAnecdote = async (event) => {
+    // Prevent the default form submission behavior.
     event.preventDefault()
+
+    // Get the value of the input field.
     const content = event.target.anecdote.value
+
+    // Clear the input field.
     event.target.anecdote.value = ''
-    const newAnecdote = await anecdoteService.createNew(content)
-    dispatch(createAnecdote(newAnecdote))
+
+    // Dispatch the createAnecdote action with the input value.
+    dispatch(createAnecdote(content))
+
+    // Dispatch the updateNotification action with a message.
     dispatch(updateNotification(`created note: ${content}`))
+
+    // Dispatch the clearNotification action after 5 seconds.
     setTimeout(() => {
       dispatch(clearNotification())
     }, 5000)
   }
 
+  // Render the form.
   return (
     <>
       <h2>create new</h2>
@@ -29,4 +47,5 @@ const AnecdoteForm = () => {
   )
 }
 
+// Export the AnecdoteForm component as the default export of this module.
 export default AnecdoteForm
