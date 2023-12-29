@@ -1,5 +1,5 @@
 import { voteForAnecdote } from '../reducers/anecdoteReducer'; // Importing the action creator for voting on an anecdote
-import { updateNotification, clearNotification } from '../reducers/notificationReducer'; // Import the notification actions
+import { setNotification } from '../reducers/notificationReducer'; // Import the notification actions
 import { useSelector, useDispatch } from 'react-redux'; // Importing hooks for accessing Redux store state and dispatch function
 
 const AnecdoteList = () => {
@@ -14,11 +14,8 @@ const AnecdoteList = () => {
 
   const handleVote = (id) => {
     const votedAnecdote = anecdotes.find(anecdote => anecdote.id === id);
-    dispatch(updateNotification(`you voted '${votedAnecdote.content}'`));
     dispatch(voteForAnecdote(votedAnecdote));
-    setTimeout(() => {
-      dispatch(clearNotification());
-    }, 5000);
+    dispatch(setNotification(`you voted '${votedAnecdote.content}'`, 5))
   };
 
   return (

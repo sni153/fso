@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux'
 import { createAnecdote } from '../reducers/anecdoteReducer'
 
 // Import the updateNotification and clearNotification action creators from our notificationReducer.
-import { updateNotification, clearNotification } from '../reducers/notificationReducer'
+import { setNotification } from '../reducers/notificationReducer'
 
 // Define the AnecdoteForm component.
 const AnecdoteForm = () => {
@@ -26,13 +26,8 @@ const AnecdoteForm = () => {
     // Dispatch the createAnecdote action with the input value.
     dispatch(createAnecdote(content))
 
-    // Dispatch the updateNotification action with a message.
-    dispatch(updateNotification(`created note: ${content}`))
-
-    // Dispatch the clearNotification action after 5 seconds.
-    setTimeout(() => {
-      dispatch(clearNotification())
-    }, 5000)
+    // Dispatch the setNotification action with a message and duration.
+    dispatch(setNotification(`new anecdote '${content}'`, 5))
   }
 
   // Render the form.
