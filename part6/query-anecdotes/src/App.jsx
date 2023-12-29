@@ -20,7 +20,7 @@ const App = () => {
     mutationFn: updateAnecdote,
     onSuccess: (updatedAnecdote) => {
       // Dispatching notification when an anecdote is voted on
-      dispatch({ type: 'SET_NOTIFICATION', payload: `Voted on '${updatedAnecdote.content}'!` })
+      dispatch({ type: 'SET_NOTIFICATION', payload: `Voted on '${updatedAnecdote.content}'.` })
 
       // Clearing the notification after 5 seconds
       setTimeout(() => {

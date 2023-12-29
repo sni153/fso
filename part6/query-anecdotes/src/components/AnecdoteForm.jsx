@@ -18,7 +18,7 @@ const AnecdoteForm = () => {
     mutationFn: createAnecdote,
     onSuccess: (newAnecdote) => {
       // Dispatching notification when a new anecdote is created
-      dispatch({ type: 'SET_NOTIFICATION', payload: `New anecdote '${newAnecdote.content}' created!` })
+      dispatch({ type: 'SET_NOTIFICATION', payload: `New anecdote '${newAnecdote.content}' created.` })
 
       // Clearing the notification after 5 seconds
       setTimeout(() => {
