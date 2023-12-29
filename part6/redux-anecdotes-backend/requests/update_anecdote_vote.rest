@@ -1,0 +1,7 @@
+PUT http://localhost:3002/api/anecdotes/658e4da5113f495ffca11550 HTTP/1.1
+Content-Type: application/json
+
+{
+  "content": "Occaecat nemo corrup",
+  "votes": 100
+}
