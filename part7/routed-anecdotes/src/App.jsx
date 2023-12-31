@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
 
 const Menu = () => {
   const padding = {
@@ -6,12 +7,14 @@ const Menu = () => {
   }
   return (
     <div>
-      <a href='#' style={padding}>anecdotes</a>
-      <a href='#' style={padding}>create new</a>
-      <a href='#' style={padding}>about</a>
+      <Link to='/' style={padding}>anecdotes</Link>
+      <Link to='create' style={padding}>create new</Link>
+      <Link to='about' style={padding}>about</Link>
     </div>
   )
 }
+
+import PropTypes from 'prop-types';
 
 const AnecdoteList = ({ anecdotes }) => (
   <div>
@@ -21,6 +24,10 @@ const AnecdoteList = ({ anecdotes }) => (
     </ul>
   </div>
 )
+
+AnecdoteList.propTypes = {
+  anecdotes: PropTypes.array.isRequired
+};
 
 const About = () => (
   <div>
@@ -80,7 +87,6 @@ const CreateNew = (props) => {
       </form>
     </div>
   )
-
 }
 
 const App = () => {
@@ -125,10 +131,14 @@ const App = () => {
   return (
     <div>
       <h1>Software anecdotes</h1>
-      <Menu />
-      <AnecdoteList anecdotes={anecdotes} />
-      <About />
-      <CreateNew addNew={addNew} />
+      <Router>
+        <Menu />
+        <Routes>
+          <Route path="/" element={<AnecdoteList anecdotes={anecdotes} />} />
+          <Route path="/create" element={<CreateNew addNew={addNew} />} />
+          <Route path="/about" element={<About />} />
+        </Routes>
+      </Router>
       <Footer />
     </div>
   )
