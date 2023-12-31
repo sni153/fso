@@ -28,6 +28,13 @@ const AnecdoteForm = () => {
       // Updating the cached data in react-query
       const anecdotes = queryClient.getQueryData(['anecdotes'])
       queryClient.setQueryData(['anecdotes'], anecdotes.concat(newAnecdote))
+    },
+    onError: (error) => {
+      // Handle the error condition here
+      dispatch({ type: 'SET_NOTIFICATION', payload:`Error: ${error.response.data.error}` })
+      setTimeout(() => {
+        dispatch({ type: 'CLEAR_NOTIFICATION' })
+      }, 5000)
     }
   })
 
@@ -36,9 +43,7 @@ const AnecdoteForm = () => {
     event.preventDefault()
     const content = event.target.anecdote.value
     event.target.anecdote.value = ''
-    if (content.length >= 5) {
-      newAnecdoteMutation.mutate({ content, votes: 0 })
-    }
+    newAnecdoteMutation.mutate({ content, votes: 0 })
   }
 
   // Rendering the form
