@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Link, useMatch } from 'react-router-dom'
 
 const Menu = () => {
   const padding = {
@@ -14,8 +14,6 @@ const Menu = () => {
   )
 }
 
-import PropTypes from 'prop-types';
-
 const AnecdoteList = ({ anecdotes }) => (
   <div>
     <h2>Anecdotes</h2>
@@ -25,8 +23,20 @@ const AnecdoteList = ({ anecdotes }) => (
   </div>
 )
 
-AnecdoteList.propTypes = {
-  anecdotes: PropTypes.array.isRequired
+const Anecdote = ({ anecdotes }) => {
+  const match = useMatch('/anecdotes/:id')
+  const anecdote = match ? anecdotes.find(anecdote => anecdote.id === Number(match.params.id)) : null
+
+  if (!anecdote) {
+    return null;
+  }
+
+  return (
+    <div>
+      <h2>{anecdote.content}</h2>
+      <p>has {anecdote.votes} votes</p>
+    </div>
+  );
 };
 
 const About = () => (
@@ -134,6 +144,7 @@ const App = () => {
       <Router>
         <Menu />
         <Routes>
+          <Route path="/anecdotes/:id" element={<Anecdote anecdotes={anecdotes} />} />
           <Route path="/" element={<AnecdoteList anecdotes={anecdotes} />} />
           <Route path="/create" element={<CreateNew addNew={addNew} />} />
           <Route path="/about" element={<About />} />
