@@ -1,22 +1,22 @@
-import { useState } from 'react'
-import PropTypes from 'prop-types'
+import { useState } from "react";
+import PropTypes from "prop-types";
 
 const BlogForm = ({ onCreateBlog }) => {
-  const [title, setTitle] = useState('')
-  const [url, setUrl] = useState('')
-  const [author, setAuthor] = useState('')
+  const [title, setTitle] = useState("");
+  const [url, setUrl] = useState("");
+  const [author, setAuthor] = useState("");
 
   const handleSubmit = async (event) => {
-    event.preventDefault()
+    event.preventDefault();
     onCreateBlog({
       title,
       author,
       url,
-    })
-    setTitle('')
-    setAuthor('')
-    setUrl('')
-  }
+    });
+    setTitle("");
+    setAuthor("");
+    setUrl("");
+  };
 
   return (
     <>
@@ -55,14 +55,16 @@ const BlogForm = ({ onCreateBlog }) => {
             onChange={({ target }) => setUrl(target.value)}
           />
         </div>
-        <button id="createButton" type="submit">create</button>
+        <button id="createButton" type="submit">
+          create
+        </button>
       </form>
     </>
-  )
-}
+  );
+};
 
 BlogForm.propTypes = {
   onCreateBlog: PropTypes.func.isRequired,
-}
+};
 
-export default BlogForm
+export default BlogForm;
