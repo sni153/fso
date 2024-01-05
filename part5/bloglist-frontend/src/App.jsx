@@ -6,19 +6,24 @@ import Notification from "./components/Notification";
 import LoginForm from "./components/LoginForm";
 import BlogForm from "./components/BlogForm";
 import Togglable from "./components/Togglable";
-import { useDispatch } from 'react-redux';
-import { setNotification } from './store';
+import { useDispatch, useSelector } from 'react-redux';
+import { createBlog, fetchBlogs, setNotification } from './store';
 import "./App.css";
 
 const App = () => {
   const blogFormRef = useRef();
-  const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
   const [message, setMessage] = useState(null);
   const [result, setResult] = useState(null);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchBlogs())
+  }, [dispatch])
+
+  const blogs = useSelector(state => state.blogs);
 
   const loginUser = async (event) => {
     event.preventDefault();
@@ -84,8 +89,7 @@ const App = () => {
   const handleCreateBlog = async (blogObject) => {
     blogService.setToken(user.token);
     try {
-      const newBlog = await blogService.create(blogObject);
-      setBlogs(blogs.concat(newBlog));
+      dispatch(createBlog(blogObject));
       dispatch(setNotification(
         `${blogObject.title} by ${blogObject.author} added`,
         'success',
@@ -100,10 +104,6 @@ const App = () => {
       ));
     }
   };
-
-  useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs));
-  }, []);
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem("loggedBlogappUser");
