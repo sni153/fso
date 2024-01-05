@@ -6,6 +6,8 @@ import Notification from "./components/Notification";
 import LoginForm from "./components/LoginForm";
 import BlogForm from "./components/BlogForm";
 import Togglable from "./components/Togglable";
+import { useDispatch } from 'react-redux';
+import { setNotification } from './store';
 import "./App.css";
 
 const App = () => {
@@ -16,6 +18,7 @@ const App = () => {
   const [user, setUser] = useState(null);
   const [message, setMessage] = useState(null);
   const [result, setResult] = useState(null);
+  const dispatch = useDispatch();
 
   const loginUser = async (event) => {
     event.preventDefault();
@@ -83,18 +86,18 @@ const App = () => {
     try {
       const newBlog = await blogService.create(blogObject);
       setBlogs(blogs.concat(newBlog));
-      setResult("success");
-      setMessage(`${blogObject.title} by ${blogObject.author} added`);
-      setTimeout(() => {
-        setMessage(null);
-      }, 5000);
+      dispatch(setNotification(
+        `${blogObject.title} by ${blogObject.author} added`,
+        'success',
+        5
+      ));
       blogFormRef.current.toggleVisibility();
     } catch (error) {
-      setResult("error");
-      setMessage(`Error adding blog: ${error}`);
-      setTimeout(() => {
-        setMessage(null);
-      }, 5000);
+      dispatch(setNotification(
+        `Error adding blog: ${error}`,
+        'error',
+        5
+      ));
     }
   };
 
