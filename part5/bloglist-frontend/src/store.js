@@ -29,6 +29,26 @@ export const createBlog = (blog) => {
   }
 }
 
+export const likeBlog = (updatedBlog, blogId) => {
+  return async dispatch => {
+    const updatedBlogResponse = await blogService.update(updatedBlog, blogId)
+    dispatch({
+      type: 'LIKE_BLOG',
+      data: updatedBlogResponse
+    })
+  }
+}
+
+export const deleteBlog = (blogId) => {
+  return async dispatch => {
+    await blogService.deleteBlog(blogId)
+    dispatch({
+      type: 'DELETE_BLOG',
+      data: { id: blogId }
+    })
+  }
+}
+
 // Define an action creator for setting a notification
 // This function returns an action object with a type of 'SET_NOTIFICATION' and a payload containing the message, messageType, and duration
 export const setNotification = (message, messageType, duration) => {
@@ -76,6 +96,10 @@ const blogReducer = (state = [], action) => {
     case 'CREATE_BLOG': 
       // If the action is 'CREATE_BLOG', add the data from the action to the current state and return the new state
       return [...state, action.data]
+    case 'LIKE_BLOG':
+      return state.map(blog => blog.id === action.data.id ? action.data : blog)
+    case 'DELETE_BLOG':
+      return state.filter(blog => blog.id !== action.data.id) 
     default: 
       // If the action is not recognized, return the current state unchanged
       return state

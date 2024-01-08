@@ -7,7 +7,7 @@ import LoginForm from "./components/LoginForm";
 import BlogForm from "./components/BlogForm";
 import Togglable from "./components/Togglable";
 import { useDispatch, useSelector } from 'react-redux';
-import { createBlog, fetchBlogs, setNotification } from './store';
+import { createBlog, fetchBlogs, likeBlog, deleteBlog, setNotification } from './store';
 import "./App.css";
 
 const App = () => {
@@ -58,14 +58,7 @@ const App = () => {
         ...likedBlog,
         likes: likedBlog.likes + 1,
       };
-      await blogService.update(updatedBlog, likedBlog.id);
-
-      // Update the blogs state, then re-sort by likes in descending order
-      const updatedBlogs = blogs.map((blog) =>
-        blog.id === likedBlog.id ? updatedBlog : blog,
-      );
-      const sortedUpdatedBlogs = updatedBlogs.sort((a, b) => b.likes - a.likes);
-      setBlogs(sortedUpdatedBlogs);
+    dispatch(likeBlog(updatedBlog, likedBlog.id));
     } catch (error) {
       console.log(error);
     }
@@ -77,9 +70,7 @@ const App = () => {
     ) {
       try {
         blogService.setToken(user.token);
-        await blogService.deleteBlog(blogToDelete.id);
-        const response = await blogService.getAll();
-        setBlogs(response);
+        dispatch(deleteBlog(blogToDelete.id));
       } catch (error) {
         console.log(error);
       }
