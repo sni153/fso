@@ -1,3 +1,4 @@
+// Importing necessary libraries, services and components
 import { useState, useEffect, useRef } from "react";
 import loginService from "./services/login";
 import blogService from "./services/blogs";
@@ -7,24 +8,30 @@ import LoginForm from "./components/LoginForm";
 import BlogForm from "./components/BlogForm";
 import Togglable from "./components/Togglable";
 import { useDispatch, useSelector } from 'react-redux';
-import { createBlog, fetchBlogs, likeBlog, deleteBlog, setNotification } from './store';
+import { createBlog, fetchBlogs, likeBlog, deleteBlog, setNotification, setUser, clearUser } from './store';
 import "./App.css";
 
 const App = () => {
-  const blogFormRef = useRef();
+  // Local state for form inputs and messages
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [user, setUser] = useState(null);
   const [message, setMessage] = useState(null);
   const [result, setResult] = useState(null);
+
+  // Redux state and dispatch function
+  const user = useSelector(state => state.user);
+  const blogs = useSelector(state => state.blogs);
   const dispatch = useDispatch();
 
+  // Reference for the blog form
+  const blogFormRef = useRef();
+
+  // Fetch blogs on component mount
   useEffect(() => {
     dispatch(fetchBlogs())
   }, [dispatch])
 
-  const blogs = useSelector(state => state.blogs);
-
+  // Login user
   const loginUser = async (event) => {
     event.preventDefault();
 
@@ -34,7 +41,7 @@ const App = () => {
         password,
       });
       window.localStorage.setItem("loggedBlogappUser", JSON.stringify(user));
-      setUser(user);
+      dispatch(setUser(user))
       setUsername("");
       setPassword("");
     } catch (exception) {
@@ -46,24 +53,19 @@ const App = () => {
     }
   };
 
+  // Logout user
   const handleLogout = () => {
     window.localStorage.clear();
-    setUser(null);
+    dispatch(clearUser());
   };
 
-  const handleLike = async (likedBlog) => {
-    try {
-      blogService.setToken(user.token);
-      const updatedBlog = {
-        ...likedBlog,
-        likes: likedBlog.likes + 1,
-      };
-    dispatch(likeBlog(updatedBlog, likedBlog.id));
-    } catch (error) {
-      console.log(error);
-    }
+  // Like a blog
+  const handleLike = (likedBlog) => {
+    blogService.setToken(user.token);
+    dispatch(likeBlog(likedBlog));
   };
 
+  // Delete a blog
   const handleDeleteBlog = async (blogToDelete) => {
     if (
       window.confirm(`Delete ${blogToDelete.title} by ${blogToDelete.author}`)
@@ -77,6 +79,7 @@ const App = () => {
     }
   };
 
+  // Create a new blog
   const handleCreateBlog = async (blogObject) => {
     blogService.setToken(user.token);
     try {
@@ -96,17 +99,20 @@ const App = () => {
     }
   };
 
+  // Check if user is logged in on component mount
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem("loggedBlogappUser");
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
-      setUser(user);
+      dispatch(setUser(user)); 
       blogService.setToken(user.token);
     }
-  }, []);
+  }, [dispatch]);
 
+  // Sort blogs by likes
   const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes);
 
+  // Render the component
   return (
     <div>
       <Notification message={message} result={result} />

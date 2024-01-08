@@ -4,6 +4,18 @@ import { configureStore } from '@reduxjs/toolkit'
 
 // Import the blogService module, which contains functions for making HTTP requests related to blogs
 import blogService from './services/blogs'
+import { createSlice } from '@reduxjs/toolkit'
+
+const userSlice = createSlice({
+  name: 'user',
+  initialState: null, // Initial state is null when no user is logged in
+  reducers: {
+    setUser: (state, action) => action.payload, // Set the user state to the payload of the action
+    clearUser: () => null, // Clear the user state by setting it to null
+  },
+});
+
+export const { setUser, clearUser } = userSlice.actions; // Export the action creators
 
 // Define an asynchronous action creator for fetching blogs
 // This function dispatches an action with a type of 'FETCH_BLOGS' and a payload containing the fetched blogs
@@ -20,24 +32,32 @@ export const fetchBlogs = () => {
 // Define an asynchronous action creator for creating a blog
 // This function dispatches an action with a type of 'CREATE_BLOG' and a payload containing the created blog
 export const createBlog = (blog) => {
-  return async dispatch => {
-    const newBlog = await blogService.create(blog)
+  return async (dispatch, getState) => {
+    const newBlog = await blogService.create(blog);
+    // Manually set the user field of the new blog to the current user
+    newBlog.user = getState().user;
     dispatch({
       type: 'CREATE_BLOG',
-      data: newBlog
-    })
-  }
-}
+      data: newBlog,
+    });
+  };
+};
 
-export const likeBlog = (updatedBlog, blogId) => {
-  return async dispatch => {
-    const updatedBlogResponse = await blogService.update(updatedBlog, blogId)
+export const likeBlog = (blog) => {
+  return async (dispatch) => {
+    const updatedBlog = {
+      ...blog,
+      likes: blog.likes + 1,
+    };
+    const returnedBlog = await blogService.update(updatedBlog, blog.id);
+    // Keep the original user object
+    returnedBlog.user = blog.user;
     dispatch({
       type: 'LIKE_BLOG',
-      data: updatedBlogResponse
-    })
-  }
-}
+      data: returnedBlog,
+    });
+  };
+};
 
 export const deleteBlog = (blogId) => {
   return async dispatch => {
@@ -111,7 +131,8 @@ const blogReducer = (state = [], action) => {
 const store = configureStore({
   reducer: {
     blogs: blogReducer,
-    notification: notificationReducer
+    notification: notificationReducer,
+    user: userSlice.reducer
   }
 })
 
