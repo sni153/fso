@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import loginService from "./services/login";
 import blogService from "./services/blogs";
 import Blog from "./components/Blog";
+import { useReducer } from "react";
+import { NotificationContext, notificationReducer } from "./contexts/NotificationContext";
 import Notification from "./components/Notification";
 import LoginForm from "./components/LoginForm";
 import BlogForm from "./components/BlogForm";
@@ -16,6 +18,7 @@ const App = () => {
   const [user, setUser] = useState(null);
   const [message, setMessage] = useState(null);
   const [result, setResult] = useState(null);
+  const [notification, dispatch] = useReducer(notificationReducer, null);
 
   const loginUser = async (event) => {
     event.preventDefault();
@@ -83,17 +86,27 @@ const App = () => {
     try {
       const newBlog = await blogService.create(blogObject);
       setBlogs(blogs.concat(newBlog));
-      setResult("success");
-      setMessage(`${blogObject.title} by ${blogObject.author} added`);
+      dispatch({ 
+        type: 'SET_NOTIFICATION', 
+        payload: { 
+          type: 'success', 
+          message: `${blogObject.title} by ${blogObject.author} added` 
+        } 
+      });
       setTimeout(() => {
-        setMessage(null);
+        dispatch({ type: 'CLEAR_NOTIFICATION' });
       }, 5000);
       blogFormRef.current.toggleVisibility();
     } catch (error) {
-      setResult("error");
-      setMessage(`Error adding blog: ${error}`);
+      dispatch({ 
+        type: 'SET_NOTIFICATION', 
+        payload: { 
+          type: 'error', 
+          message: `Error adding blog: ${error}` 
+        } 
+      });
       setTimeout(() => {
-        setMessage(null);
+        dispatch({ type: 'CLEAR_NOTIFICATION' });
       }, 5000);
     }
   };
@@ -114,8 +127,8 @@ const App = () => {
   const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes);
 
   return (
-    <div>
-      <Notification message={message} result={result} />
+    <NotificationContext.Provider value={{ notification, dispatch }}>
+      <Notification />
       {!user && (
         <LoginForm
           username={username}
@@ -145,7 +158,7 @@ const App = () => {
           ))}
         </div>
       )}
-    </div>
+    </NotificationContext.Provider>
   );
 };
 
