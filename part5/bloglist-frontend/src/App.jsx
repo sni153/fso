@@ -1,3 +1,4 @@
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState, useEffect, useRef } from "react";
 import loginService from "./services/login";
 import blogService from "./services/blogs";
@@ -12,7 +13,7 @@ import "./App.css";
 
 const App = () => {
   const blogFormRef = useRef();
-  const [blogs, setBlogs] = useState([]);
+  const queryClient = useQueryClient()
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
@@ -60,7 +61,6 @@ const App = () => {
         blog.id === likedBlog.id ? updatedBlog : blog,
       );
       const sortedUpdatedBlogs = updatedBlogs.sort((a, b) => b.likes - a.likes);
-      setBlogs(sortedUpdatedBlogs);
     } catch (error) {
       console.log(error);
     }
@@ -74,18 +74,48 @@ const App = () => {
         blogService.setToken(user.token);
         await blogService.deleteBlog(blogToDelete.id);
         const response = await blogService.getAll();
-        setBlogs(response);
       } catch (error) {
         console.log(error);
       }
     }
   };
 
-  const handleCreateBlog = async (blogObject) => {
-    blogService.setToken(user.token);
+   // Use useMutation for creating a new blog
+  const createBlogMutation = useMutation({
+    mutationFn: blogService.create,
+    onSuccess: (newBlog) => {
+      // On success, invalidate and refetch the 'blogs' query
+      queryClient.invalidateQueries('blogs');
+      dispatch({ 
+        type: 'SET_NOTIFICATION', 
+        payload: { 
+          type: 'success', 
+          message: `${newBlog.title} by ${newBlog.author} added` 
+        } 
+      });
+      setTimeout(() => {
+        dispatch({ type: 'CLEAR_NOTIFICATION' });
+      }, 5000);
+      blogFormRef.current.toggleVisibility();
+    },
+    onError: (error) => {
+      dispatch({ 
+        type: 'SET_NOTIFICATION', 
+        payload: { 
+          type: 'error', 
+          message: `Error adding blog: ${error}` 
+        } 
+      });
+      setTimeout(() => {
+        dispatch({ type: 'CLEAR_NOTIFICATION' });
+      }, 5000);
+    }
+  });
+
+  const handleCreateBlog = (blogObject) => {
     try {
-      const newBlog = await blogService.create(blogObject);
-      setBlogs(blogs.concat(newBlog));
+      blogService.setToken(user.token);
+      createBlogMutation.mutate(blogObject);
       dispatch({ 
         type: 'SET_NOTIFICATION', 
         payload: { 
@@ -111,9 +141,11 @@ const App = () => {
     }
   };
 
-  useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs));
-  }, []);
+  const { data: blogs, isError, error, refetch } = useQuery({
+    queryKey: ['blogs'],
+    queryFn: blogService.getAll,
+    retry: false,
+  });
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem("loggedBlogappUser");
@@ -124,7 +156,7 @@ const App = () => {
     }
   }, []);
 
-  const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes);
+  const sortedBlogs = blogs ? [...blogs].sort((a, b) => b.likes - a.likes) : [];
 
   return (
     <NotificationContext.Provider value={{ notification, dispatch }}>
