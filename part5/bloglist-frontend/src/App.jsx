@@ -47,24 +47,57 @@ const App = () => {
     setUser(null);
   };
 
-  const handleLike = async (likedBlog) => {
+  const likeBlogMutation = useMutation({
+    mutationFn: ({ newObject, blogId }) => blogService.update(newObject, blogId), 
+    onSuccess: (data, variables, context) => {
+      // On success, invalidate and refetch the 'blogs' query
+      queryClient.invalidateQueries('blogs');
+      dispatch({ 
+        type: 'SET_NOTIFICATION', 
+        payload: { 
+          type: 'success', 
+          message: `Blog ${context.title} liked!`,
+        } 
+      });
+      setTimeout(() => {
+        dispatch({ type: 'CLEAR_NOTIFICATION' });
+      }, 5000);
+    }
+  })
+
+  const handleLikeBlog = (likedBlog) => {
     try {
       blogService.setToken(user.token);
       const updatedBlog = {
         ...likedBlog,
         likes: likedBlog.likes + 1,
       };
-      await blogService.update(updatedBlog, likedBlog.id);
-
-      // Update the blogs state, then re-sort by likes in descending order
-      const updatedBlogs = blogs.map((blog) =>
-        blog.id === likedBlog.id ? updatedBlog : blog,
-      );
-      const sortedUpdatedBlogs = updatedBlogs.sort((a, b) => b.likes - a.likes);
+      likeBlogMutation.mutate({ newObject: updatedBlog, blogId: likedBlog.id }, { context: updatedBlog });
     } catch (error) {
       console.log(error);
     }
   };
+
+  const deleteBlogMutation = useMutation({
+    mutationFn: (blogId) => blogService.deleteBlog(blogId),
+    onSuccess: () => {
+      // On success, invalidate and refetch the 'blogs' query
+      queryClient.invalidateQueries('blogs');
+      dispatch({ 
+        type: 'SET_NOTIFICATION', 
+        payload: { 
+          type: 'success', 
+          message: 'Blog deleted successfully!',
+        } 
+      });
+      setTimeout(() => {
+        dispatch({ type: 'CLEAR_NOTIFICATION' });
+      }, 5000);
+    },
+    onError: (error) => {
+      console.log(error);
+    }
+  })
 
   const handleDeleteBlog = async (blogToDelete) => {
     if (
@@ -72,7 +105,7 @@ const App = () => {
     ) {
       try {
         blogService.setToken(user.token);
-        await blogService.deleteBlog(blogToDelete.id);
+        deleteBlogMutation.mutate(blogToDelete.id);
         const response = await blogService.getAll();
       } catch (error) {
         console.log(error);
@@ -184,7 +217,7 @@ const App = () => {
               key={blog.id}
               blog={blog}
               user={user}
-              onLike={handleLike}
+              onLike={handleLikeBlog}
               onDelete={handleDeleteBlog}
             />
           ))}
