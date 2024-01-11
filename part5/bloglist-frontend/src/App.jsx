@@ -1,19 +1,32 @@
+// React and hooks
+import React, { useState, useEffect, useRef, useReducer } from 'react';
+import { useParams } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useState, useEffect, useRef } from "react";
+
+// Services
 import loginService from "./services/login";
 import blogService from "./services/blogs";
-import Blog from "./components/Blog";
-import { useReducer } from "react";
+import userService from "./services/users";
+
+// Contexts
 import { NotificationContext, notificationReducer } from "./contexts/NotificationContext";
 import { UserContext, userReducer } from "./contexts/UserContext";
+
+// Components
+import Blog from "./components/Blog";
 import Notification from "./components/Notification";
 import LoginForm from "./components/LoginForm";
-import BlogForm from "./components/BlogForm";
-import Togglable from "./components/Togglable";
-import "./App.css";
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import User from './components/User';
+
+// Views
 import UsersView from './views/UsersView';
+import BlogsView from './views/BlogsView';
+
+// Router
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+
+// Styles
+import "./App.css";
 
 const App = () => {
   const blogFormRef = useRef();
@@ -22,6 +35,25 @@ const App = () => {
   const [password, setPassword] = useState("");
   const [notification, dispatchNotification] = useReducer(notificationReducer, null);
   const [user, dispatchUser] = useReducer(userReducer, null);
+
+  const UserRoute = () => {
+    const { id } = useParams();
+    const { data: user, isLoading, isError, error } = useQuery({
+      queryKey: ['user', id], 
+      queryFn: () => userService.get(id), 
+      retry: false,
+    });
+  
+    if (isLoading) {
+      return <div>Loading...</div>;
+    }
+  
+    if (isError) {
+      return <div>Error: {error.message}</div>;
+    }
+  
+    return <User user={user} />;
+  };
 
   const loginUser = async (event) => {
     event.preventDefault();
@@ -214,27 +246,17 @@ const App = () => {
           )}
           {user && (
             <Routes>
+              <Route path="/users/:id" element={<UserRoute />} />
               <Route path="/users" element={<UsersView handleLogout={handleLogout} user={user} />} />
-              <Route path="/" element={
-                <div>
-                  <h1>blogs</h1>
-                  <p>
-                    {user.name} logged in <button onClick={handleLogout}>logout</button>
-                  </p>
-                  <Togglable buttonLabel="create new blog" ref={blogFormRef}>
-                    <BlogForm onCreateBlog={handleCreateBlog}></BlogForm>
-                  </Togglable>
-                  {sortedBlogs.map((blog) => (
-                    <Blog
-                      key={blog.id}
-                      blog={blog}
-                      user={user}
-                      onLike={handleLikeBlog}
-                      onDelete={handleDeleteBlog}
-                    />
-                  ))}
-                </div>
-              } />
+              <Route path="/" element={<BlogsView
+                user={user} 
+                handleLogout={handleLogout} 
+                blogFormRef={blogFormRef} 
+                handleCreateBlog={handleCreateBlog} 
+                sortedBlogs={sortedBlogs} 
+                handleLikeBlog={handleLikeBlog} 
+                handleDeleteBlog={handleDeleteBlog} 
+              />} />
             </Routes>
           )}
         </UserContext.Provider>

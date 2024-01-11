@@ -1,5 +1,5 @@
 import axios from "axios";
-const baseUrl = "/api/users"; // replace with your actual API endpoint for users
+const baseUrl = "/api/users";
 
 let token = null;
 
@@ -12,4 +12,9 @@ const getAll = () => {
   return request.then((response) => response.data);
 };
 
-export default { setToken, getAll };
+const get = (id) => {
+  const request = axios.get(`${baseUrl}/${id}`);
+  return request.then((response) => response.data);
+};
+
+export default { setToken, getAll, get };
