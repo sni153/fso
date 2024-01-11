@@ -5,6 +5,7 @@ import blogService from "./services/blogs";
 import Blog from "./components/Blog";
 import { useReducer } from "react";
 import { NotificationContext, notificationReducer } from "./contexts/NotificationContext";
+import { UserContext, userReducer } from "./contexts/UserContext";
 import Notification from "./components/Notification";
 import LoginForm from "./components/LoginForm";
 import BlogForm from "./components/BlogForm";
@@ -16,52 +17,55 @@ const App = () => {
   const queryClient = useQueryClient()
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [user, setUser] = useState(null);
-  const [message, setMessage] = useState(null);
-  const [result, setResult] = useState(null);
-  const [notification, dispatch] = useReducer(notificationReducer, null);
+  const [notification, dispatchNotification] = useReducer(notificationReducer, null);
+  const [user, dispatchUser] = useReducer(userReducer, null);
 
   const loginUser = async (event) => {
     event.preventDefault();
-
+  
     try {
       const user = await loginService.login({
         username,
         password,
       });
+  
       window.localStorage.setItem("loggedBlogappUser", JSON.stringify(user));
-      setUser(user);
+      dispatchUser({ type: 'SET_USER', payload: user });
       setUsername("");
       setPassword("");
     } catch (exception) {
-      setResult("error");
-      setMessage("wrong username or password");
+      dispatchNotification({ 
+        type: 'SET_NOTIFICATION', 
+        payload: { 
+          type: 'error', 
+          message: 'wrong username or password' 
+        } 
+      });
       setTimeout(() => {
-        setMessage(null);
+        dispatchNotification({ type: 'CLEAR_NOTIFICATION' });
       }, 5000);
     }
   };
 
   const handleLogout = () => {
     window.localStorage.clear();
-    setUser(null);
+    dispatchUser({ type: 'CLEAR_USER' });
   };
 
   const likeBlogMutation = useMutation({
     mutationFn: ({ newObject, blogId }) => blogService.update(newObject, blogId), 
     onSuccess: (data, variables, context) => {
-      // On success, invalidate and refetch the 'blogs' query
       queryClient.invalidateQueries('blogs');
-      dispatch({ 
+      dispatchNotification({ 
         type: 'SET_NOTIFICATION', 
         payload: { 
           type: 'success', 
-          message: `Blog ${context.title} liked!`,
+          message: `Blog ${variables.newObject.title} liked!`,
         } 
       });
       setTimeout(() => {
-        dispatch({ type: 'CLEAR_NOTIFICATION' });
-      }, 5000);
+          dispatchNotification({ type: 'CLEAR_NOTIFICATION' });
+        }, 5000);
     }
   })
 
@@ -72,7 +76,7 @@ const App = () => {
         ...likedBlog,
         likes: likedBlog.likes + 1,
       };
-      likeBlogMutation.mutate({ newObject: updatedBlog, blogId: likedBlog.id }, { context: updatedBlog });
+      likeBlogMutation.mutate({ newObject: updatedBlog, blogId: likedBlog.id });
     } catch (error) {
       console.log(error);
     }
@@ -83,7 +87,7 @@ const App = () => {
     onSuccess: () => {
       // On success, invalidate and refetch the 'blogs' query
       queryClient.invalidateQueries('blogs');
-      dispatch({ 
+      dispatchNotification({ 
         type: 'SET_NOTIFICATION', 
         payload: { 
           type: 'success', 
@@ -91,7 +95,7 @@ const App = () => {
         } 
       });
       setTimeout(() => {
-        dispatch({ type: 'CLEAR_NOTIFICATION' });
+        dispatchNotification({ type: 'CLEAR_NOTIFICATION' });
       }, 5000);
     },
     onError: (error) => {
@@ -119,7 +123,7 @@ const App = () => {
     onSuccess: (newBlog) => {
       // On success, invalidate and refetch the 'blogs' query
       queryClient.invalidateQueries('blogs');
-      dispatch({ 
+      dispatchNotification({ 
         type: 'SET_NOTIFICATION', 
         payload: { 
           type: 'success', 
@@ -127,12 +131,12 @@ const App = () => {
         } 
       });
       setTimeout(() => {
-        dispatch({ type: 'CLEAR_NOTIFICATION' });
+        dispatchNotification({ type: 'CLEAR_NOTIFICATION' });
       }, 5000);
       blogFormRef.current.toggleVisibility();
     },
     onError: (error) => {
-      dispatch({ 
+      dispatchNotification({ 
         type: 'SET_NOTIFICATION', 
         payload: { 
           type: 'error', 
@@ -140,7 +144,7 @@ const App = () => {
         } 
       });
       setTimeout(() => {
-        dispatch({ type: 'CLEAR_NOTIFICATION' });
+        dispatchNotification({ type: 'CLEAR_NOTIFICATION' });
       }, 5000);
     }
   });
@@ -149,7 +153,7 @@ const App = () => {
     try {
       blogService.setToken(user.token);
       createBlogMutation.mutate(blogObject);
-      dispatch({ 
+      dispatchNotification({ 
         type: 'SET_NOTIFICATION', 
         payload: { 
           type: 'success', 
@@ -157,11 +161,11 @@ const App = () => {
         } 
       });
       setTimeout(() => {
-        dispatch({ type: 'CLEAR_NOTIFICATION' });
+        dispatchNotification({ type: 'CLEAR_NOTIFICATION' });
       }, 5000);
       blogFormRef.current.toggleVisibility();
     } catch (error) {
-      dispatch({ 
+      dispatchNotification({ 
         type: 'SET_NOTIFICATION', 
         payload: { 
           type: 'error', 
@@ -169,7 +173,7 @@ const App = () => {
         } 
       });
       setTimeout(() => {
-        dispatch({ type: 'CLEAR_NOTIFICATION' });
+        dispatchNotification({ type: 'CLEAR_NOTIFICATION' });
       }, 5000);
     }
   };
@@ -184,7 +188,7 @@ const App = () => {
     const loggedUserJSON = window.localStorage.getItem("loggedBlogappUser");
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
-      setUser(user);
+      dispatchUser({ type: 'SET_USER', payload: user });
       blogService.setToken(user.token);
     }
   }, []);
@@ -192,37 +196,39 @@ const App = () => {
   const sortedBlogs = blogs ? [...blogs].sort((a, b) => b.likes - a.likes) : [];
 
   return (
-    <NotificationContext.Provider value={{ notification, dispatch }}>
-      <Notification />
-      {!user && (
-        <LoginForm
-          username={username}
-          password={password}
-          setUsername={setUsername}
-          setPassword={setPassword}
-          handleSubmit={loginUser}
-        />
-      )}
-      {user && (
-        <div>
-          <h1>blogs</h1>
-          <p>
-            {user.name} logged in <button onClick={handleLogout}>logout</button>
-          </p>
-          <Togglable buttonLabel="create new blog" ref={blogFormRef}>
-            <BlogForm onCreateBlog={handleCreateBlog}></BlogForm>
-          </Togglable>
-          {sortedBlogs.map((blog) => (
-            <Blog
-              key={blog.id}
-              blog={blog}
-              user={user}
-              onLike={handleLikeBlog}
-              onDelete={handleDeleteBlog}
-            />
-          ))}
-        </div>
-      )}
+    <NotificationContext.Provider value={{ notification, dispatchNotification }}>
+      <UserContext.Provider value={{ user, dispatchUser }}>
+        <Notification />
+        {!user && (
+          <LoginForm
+            username={username}
+            password={password}
+            setUsername={setUsername}
+            setPassword={setPassword}
+            handleSubmit={loginUser}
+          />
+        )}
+        {user && (
+          <div>
+            <h1>blogs</h1>
+            <p>
+              {user.name} logged in <button onClick={handleLogout}>logout</button>
+            </p>
+            <Togglable buttonLabel="create new blog" ref={blogFormRef}>
+              <BlogForm onCreateBlog={handleCreateBlog}></BlogForm>
+            </Togglable>
+            {sortedBlogs.map((blog) => (
+              <Blog
+                key={blog.id}
+                blog={blog}
+                user={user}
+                onLike={handleLikeBlog}
+                onDelete={handleDeleteBlog}
+              />
+            ))}
+          </div>
+        )}
+      </UserContext.Provider>
     </NotificationContext.Provider>
   );
 };
