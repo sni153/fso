@@ -11,6 +11,9 @@ import LoginForm from "./components/LoginForm";
 import BlogForm from "./components/BlogForm";
 import Togglable from "./components/Togglable";
 import "./App.css";
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import UsersView from './views/UsersView';
 
 const App = () => {
   const blogFormRef = useRef();
@@ -196,40 +199,47 @@ const App = () => {
   const sortedBlogs = blogs ? [...blogs].sort((a, b) => b.likes - a.likes) : [];
 
   return (
-    <NotificationContext.Provider value={{ notification, dispatchNotification }}>
-      <UserContext.Provider value={{ user, dispatchUser }}>
-        <Notification />
-        {!user && (
-          <LoginForm
-            username={username}
-            password={password}
-            setUsername={setUsername}
-            setPassword={setPassword}
-            handleSubmit={loginUser}
-          />
-        )}
-        {user && (
-          <div>
-            <h1>blogs</h1>
-            <p>
-              {user.name} logged in <button onClick={handleLogout}>logout</button>
-            </p>
-            <Togglable buttonLabel="create new blog" ref={blogFormRef}>
-              <BlogForm onCreateBlog={handleCreateBlog}></BlogForm>
-            </Togglable>
-            {sortedBlogs.map((blog) => (
-              <Blog
-                key={blog.id}
-                blog={blog}
-                user={user}
-                onLike={handleLikeBlog}
-                onDelete={handleDeleteBlog}
-              />
-            ))}
-          </div>
-        )}
-      </UserContext.Provider>
-    </NotificationContext.Provider>
+    <Router>
+      <NotificationContext.Provider value={{ notification, dispatchNotification }}>
+        <UserContext.Provider value={{ user, dispatchUser }}>
+          <Notification />
+          {!user && (
+            <LoginForm
+              username={username}
+              password={password}
+              setUsername={setUsername}
+              setPassword={setPassword}
+              handleSubmit={loginUser}
+            />
+          )}
+          {user && (
+            <Routes>
+              <Route path="/users" element={<UsersView handleLogout={handleLogout} user={user} />} />
+              <Route path="/" element={
+                <div>
+                  <h1>blogs</h1>
+                  <p>
+                    {user.name} logged in <button onClick={handleLogout}>logout</button>
+                  </p>
+                  <Togglable buttonLabel="create new blog" ref={blogFormRef}>
+                    <BlogForm onCreateBlog={handleCreateBlog}></BlogForm>
+                  </Togglable>
+                  {sortedBlogs.map((blog) => (
+                    <Blog
+                      key={blog.id}
+                      blog={blog}
+                      user={user}
+                      onLike={handleLikeBlog}
+                      onDelete={handleDeleteBlog}
+                    />
+                  ))}
+                </div>
+              } />
+            </Routes>
+          )}
+        </UserContext.Provider>
+      </NotificationContext.Provider>
+    </Router>
   );
 };
 
