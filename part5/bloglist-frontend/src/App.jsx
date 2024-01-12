@@ -20,7 +20,9 @@ import User from './components/User';
 
 // Views
 import UsersView from './views/UsersView';
+import UserView from './views/UserView';
 import BlogsView from './views/BlogsView';
+import BlogView from './views/BlogView';
 
 // Router
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
@@ -52,7 +54,7 @@ const App = () => {
       return <div>Error: {error.message}</div>;
     }
   
-    return <User user={user} />;
+    return <User user={user} handleLogout={handleLogout} />
   };
 
   const loginUser = async (event) => {
@@ -246,7 +248,8 @@ const App = () => {
           )}
           {user && (
             <Routes>
-              <Route path="/users/:id" element={<UserRoute />} />
+              <Route path="/blogs/:id" element={<BlogView handleLikeBlog={handleLikeBlog} handleLogout={handleLogout}/>} />
+              <Route path="/users/:id" element={<UserView handleLogout={handleLogout} />} />
               <Route path="/users" element={<UsersView handleLogout={handleLogout} user={user} />} />
               <Route path="/" element={<BlogsView
                 user={user} 

@@ -1,7 +1,17 @@
+// Import React and necessary hooks
 import React from 'react';
+
+// Import react-query for data fetching
 import { useQuery } from '@tanstack/react-query';
+
+// Import the service to fetch user data
 import userService from "../services/users";
+
+// Import Link from react-router-dom for routing
 import { Link } from 'react-router-dom';
+
+// Import UserStatus component
+import UserStatus from '../components/UserStatus';
 
 const UsersView = ({ handleLogout, user }) => {
   const { data: users, isLoading, isError, error } = useQuery({
@@ -20,10 +30,7 @@ const UsersView = ({ handleLogout, user }) => {
 
   return (
     <div>
-      <h2>Users</h2>
-      <p>
-        {user.name} logged in <button onClick={handleLogout}>logout</button>
-      </p>
+      <UserStatus user={user} handleLogout={handleLogout} />
       <table>
         <thead>
           <tr>
