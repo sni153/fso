@@ -17,6 +17,7 @@ import Blog from "./components/Blog";
 import Notification from "./components/Notification";
 import LoginForm from "./components/LoginForm";
 import User from './components/User';
+import UserStatus from './components/UserStatus';
 
 // Views
 import UsersView from './views/UsersView';
@@ -25,7 +26,7 @@ import BlogsView from './views/BlogsView';
 import BlogView from './views/BlogView';
 
 // Router
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 
 // Styles
 import "./App.css";
@@ -54,7 +55,7 @@ const App = () => {
       return <div>Error: {error.message}</div>;
     }
   
-    return <User user={user} handleLogout={handleLogout} />
+    return <User user={user} />
   };
 
   const loginUser = async (event) => {
@@ -232,6 +233,10 @@ const App = () => {
 
   const sortedBlogs = blogs ? [...blogs].sort((a, b) => b.likes - a.likes) : [];
 
+  const padding = {
+    padding: 5
+  }
+
   return (
     <Router>
       <NotificationContext.Provider value={{ notification, dispatchNotification }}>
@@ -247,13 +252,21 @@ const App = () => {
             />
           )}
           {user && (
+            <>
+            <div className="navbar">
+              <Link style={padding} to="/">blogs</Link>
+              <Link style={padding} to="/users">users</Link>
+              {user && <UserStatus user={user} handleLogout={handleLogout} />}
+            </div>
+            <div>
+              <h1>blog app</h1>
+            </div>
             <Routes>
-              <Route path="/blogs/:id" element={<BlogView handleLikeBlog={handleLikeBlog} handleLogout={handleLogout}/>} />
-              <Route path="/users/:id" element={<UserView handleLogout={handleLogout} />} />
-              <Route path="/users" element={<UsersView handleLogout={handleLogout} user={user} />} />
+              <Route path="/blogs/:id" element={<BlogView handleLikeBlog={handleLikeBlog} />} />
+              <Route path="/users/:id" element={<UserView />} />
+              <Route path="/users" element={<UsersView user={user} />} />
               <Route path="/" element={<BlogsView
                 user={user} 
-                handleLogout={handleLogout} 
                 blogFormRef={blogFormRef} 
                 handleCreateBlog={handleCreateBlog} 
                 sortedBlogs={sortedBlogs} 
@@ -261,6 +274,7 @@ const App = () => {
                 handleDeleteBlog={handleDeleteBlog} 
               />} />
             </Routes>
+            </>
           )}
         </UserContext.Provider>
       </NotificationContext.Provider>

@@ -13,7 +13,7 @@ import userService from "../services/users";
 // Import User component
 import User from '../components/User';
 
-const UserView = ({ handleLogout }) => {
+const UserView = () => {
   const { id } = useParams();
   const { data: user, isLoading, isError, error } = useQuery({
     queryKey: ['user', id], 
@@ -29,7 +29,7 @@ const UserView = ({ handleLogout }) => {
     return <div>Error: {error.message}</div>;
   }
 
-  return <User user={user} handleLogout={handleLogout} />
+  return <User user={user} />
 };
 
 export default UserView;

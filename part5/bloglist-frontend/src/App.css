@@ -26,3 +26,8 @@
   background-color: blue;
   color: white;
 }
+
+.navbar {
+  display: flex;
+  align-items: center;
+}

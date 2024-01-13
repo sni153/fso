@@ -1,15 +1,13 @@
 import React from 'react';
-import UserStatus from './UserStatus';
 import { Link } from 'react-router-dom';
 
-const User = ({ user, handleLogout }) => {
+const User = ({ user }) => {
   if (!user) {
     return null;
   }
 
   return (
     <div>
-      <UserStatus user={user} handleLogout={handleLogout} />
       <h2>{user.name}</h2>
       <h3>added blogs</h3>
       <ul>

@@ -13,10 +13,7 @@ import blogService from '../services/blogs';
 // Import UserContext for accessing user data
 import { UserContext } from '../contexts/UserContext'; 
 
-// Import UserStatus component
-import UserStatus from '../components/UserStatus'; 
-
-const BlogView = ({ handleLogout, handleLikeBlog }) => {
+const BlogView = ({ handleLikeBlog }) => {
   const { id } = useParams();
   const { user } = useContext(UserContext);
   const { data: blog, isLoading } = useQuery({
@@ -34,7 +31,6 @@ const BlogView = ({ handleLogout, handleLikeBlog }) => {
 
   return (
     <div>
-      <UserStatus user={user} handleLogout={handleLogout} />
       <h1>{blog.title}</h1>
       <a href={blog.url} target="_blank" rel="noopener noreferrer">{blog.url}</a>
       <p>{blog.likes} likes <button onClick={(likeBlog)}>Like</button></p>

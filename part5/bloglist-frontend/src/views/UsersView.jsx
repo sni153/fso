@@ -10,10 +10,7 @@ import userService from "../services/users";
 // Import Link from react-router-dom for routing
 import { Link } from 'react-router-dom';
 
-// Import UserStatus component
-import UserStatus from '../components/UserStatus';
-
-const UsersView = ({ handleLogout, user }) => {
+const UsersView = ({ user }) => {
   const { data: users, isLoading, isError, error } = useQuery({
     queryKey: ['users'],
     queryFn: userService.getAll,
@@ -30,7 +27,6 @@ const UsersView = ({ handleLogout, user }) => {
 
   return (
     <div>
-      <UserStatus user={user} handleLogout={handleLogout} />
       <table>
         <thead>
           <tr>
