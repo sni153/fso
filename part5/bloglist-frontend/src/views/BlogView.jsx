@@ -13,6 +13,12 @@ import blogService from '../services/blogs';
 // Import UserContext for accessing user data
 import { UserContext } from '../contexts/UserContext'; 
 
+// CommentForm is used to submit new comments.
+import CommentForm from '../components/CommentForm';
+
+// CommentList is used to display the list of existing comments.
+import CommentList from '../components/CommentList';
+
 const BlogView = ({ handleLikeBlog }) => {
   const { id } = useParams();
   const { user } = useContext(UserContext);
@@ -35,6 +41,8 @@ const BlogView = ({ handleLikeBlog }) => {
       <a href={blog.url} target="_blank" rel="noopener noreferrer">{blog.url}</a>
       <p>{blog.likes} likes <button onClick={(likeBlog)}>Like</button></p>
       <p>added by {blog.author}</p>
+      <CommentForm blogId={blog.id}/>
+      <CommentList blogId={blog.id}/>
     </div>
   );
 };
