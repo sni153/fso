@@ -1,4 +1,5 @@
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
+import { TextField, Button, Typography } from '@mui/material';
 
 const LoginForm = ({
   username,
@@ -9,11 +10,11 @@ const LoginForm = ({
 }) => {
   return (
     <form onSubmit={handleSubmit}>
-      <h1>log in to application</h1>
+      <Typography variant="h3">Log in to Blog Beat</Typography>
       <div>
-        username
-        <input
+        <TextField
           id="username"
+          label="username"
           type="text"
           value={username}
           name="Username"
@@ -21,18 +22,18 @@ const LoginForm = ({
         />
       </div>
       <div>
-        password
-        <input
+        <TextField
           id="password"
+          label="password"
           type="password"
           value={password}
           name="Password"
           onChange={({ target }) => setPassword(target.value)}
         />
       </div>
-      <button id="login-button" type="submit">
+      <Button id="login-button" type="submit" variant="contained" color="primary">
         login
-      </button>
+      </Button>
     </form>
   );
 };

@@ -19,6 +19,12 @@ import CommentForm from '../components/CommentForm';
 // CommentList is used to display the list of existing comments.
 import CommentList from '../components/CommentList';
 
+// Import Material UI components
+import { Button, Card, CardActions, CardContent, Typography } from '@mui/material';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import { Box } from '@mui/material';
+import { Grid } from '@mui/material';
+
 const BlogView = ({ handleLikeBlog }) => {
   const { id } = useParams();
   const { user } = useContext(UserContext);
@@ -36,14 +42,41 @@ const BlogView = ({ handleLikeBlog }) => {
   };
 
   return (
-    <div>
-      <h1>{blog.title}</h1>
-      <a href={blog.url} target="_blank" rel="noopener noreferrer">{blog.url}</a>
-      <p>{blog.likes} likes <button onClick={(likeBlog)}>Like</button></p>
-      <p>added by {blog.author}</p>
-      <CommentForm blogId={blog.id}/>
-      <CommentList blogId={blog.id}/>
-    </div>
+    <Card>
+      <CardContent>
+        <Grid container>
+          <Grid item xs={12}>
+            <Typography variant="h5" component="h2">
+              {blog.title}
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Typography color="textSecondary">
+              <a href={blog.url} target="_blank" rel="noopener noreferrer">{blog.url}</a>
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Typography variant="body2" component="p">
+              {blog.likes} likes
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Typography color="textSecondary">
+              added by {blog.author}
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Button variant="contained" color="primary" startIcon={<ThumbUpIcon />} onClick={likeBlog}>
+              Like
+            </Button>
+          </Grid>
+        </Grid>
+      </CardContent>
+      <Box p={2}>
+        <CommentForm blogId={blog.id}/>
+        <CommentList blogId={blog.id}/>
+      </Box>
+    </Card>
   );
 };
 

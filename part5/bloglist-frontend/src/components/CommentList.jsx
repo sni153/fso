@@ -1,6 +1,7 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import commentService from '../services/comments'; 
+import { CircularProgress, List, ListItem, Typography } from '@mui/material';
 
 const CommentList = ({ blogId }) => {
   const { data: comments, isLoading } = useQuery({
@@ -9,17 +10,19 @@ const CommentList = ({ blogId }) => {
   });
 
   if (isLoading) {
-    return <div>Loading comments...</div>;
+    return <CircularProgress />;
   }
 
   return (
     <div>
-      <h2>Comments</h2>
-      <ul>
-      {comments && comments.map((comment, index) => (
-        <li key={index}>{comment}</li> 
-      ))}
-      </ul>
+      <Typography variant="h6">Comments</Typography>
+      <List>
+        {comments && comments.map((comment, index) => (
+          <ListItem key={index}>
+            <Typography variant="body1">{comment}</Typography>
+          </ListItem>
+        ))}
+      </List>
     </div>
   );
 };

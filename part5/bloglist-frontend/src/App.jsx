@@ -30,6 +30,7 @@ import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 
 // Styles
 import "./App.css";
+import { Container, Box, Typography, Button, AppBar, Toolbar, Link as MuiLink } from '@mui/material';
 
 const App = () => {
   const blogFormRef = useRef();
@@ -238,47 +239,51 @@ const App = () => {
   }
 
   return (
-    <Router>
-      <NotificationContext.Provider value={{ notification, dispatchNotification }}>
-        <UserContext.Provider value={{ user, dispatchUser }}>
-          <Notification />
-          {!user && (
-            <LoginForm
-              username={username}
-              password={password}
-              setUsername={setUsername}
-              setPassword={setPassword}
-              handleSubmit={loginUser}
-            />
-          )}
-          {user && (
-            <>
-            <div className="navbar">
-              <Link style={padding} to="/">blogs</Link>
-              <Link style={padding} to="/users">users</Link>
-              {user && <UserStatus user={user} handleLogout={handleLogout} />}
-            </div>
-            <div>
-              <h1>blog app</h1>
-            </div>
-            <Routes>
-              <Route path="/blogs/:id" element={<BlogView handleLikeBlog={handleLikeBlog} />} />
-              <Route path="/users/:id" element={<UserView />} />
-              <Route path="/users" element={<UsersView user={user} />} />
-              <Route path="/" element={<BlogsView
-                user={user} 
-                blogFormRef={blogFormRef} 
-                handleCreateBlog={handleCreateBlog} 
-                sortedBlogs={sortedBlogs} 
-                handleLikeBlog={handleLikeBlog} 
-                handleDeleteBlog={handleDeleteBlog} 
-              />} />
-            </Routes>
-            </>
-          )}
-        </UserContext.Provider>
-      </NotificationContext.Provider>
-    </Router>
+    <Container>
+      <Router>
+        <NotificationContext.Provider value={{ notification, dispatchNotification }}>
+          <UserContext.Provider value={{ user, dispatchUser }}>
+            <Notification />
+            {!user && (
+              <LoginForm
+                username={username}
+                password={password}
+                setUsername={setUsername}
+                setPassword={setPassword}
+                handleSubmit={loginUser}
+              />
+            )}
+            {user && (
+              <>
+                <AppBar position="static">
+                  <Toolbar>
+                    <MuiLink component={Link} to="/" color="inherit" style={padding}>Blogs</MuiLink>
+                    <MuiLink component={Link} to="/users" color="inherit" style={padding}>Users</MuiLink>
+                    {user && <UserStatus user={user} handleLogout={handleLogout} />}
+                  </Toolbar>
+                </AppBar>
+                <Box my={2}>
+                  <Typography variant="h3">Blog Beat</Typography>
+                </Box>
+                <Routes>
+                  <Route path="/blogs/:id" element={<BlogView handleLikeBlog={handleLikeBlog} />} />
+                  <Route path="/users/:id" element={<UserView />} />
+                  <Route path="/users" element={<UsersView user={user} />} />
+                  <Route path="/" element={<BlogsView
+                    user={user} 
+                    blogFormRef={blogFormRef} 
+                    handleCreateBlog={handleCreateBlog} 
+                    sortedBlogs={sortedBlogs} 
+                    handleLikeBlog={handleLikeBlog} 
+                    handleDeleteBlog={handleDeleteBlog} 
+                  />} />
+                </Routes>
+              </>
+            )}
+          </UserContext.Provider>
+        </NotificationContext.Provider>
+      </Router>
+    </Container>
   );
 };
 

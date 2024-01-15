@@ -1,7 +1,8 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
+import { TextField, Button, Typography } from '@mui/material';
 
-const BlogForm = ({ onCreateBlog }) => {
+const BlogForm = ({ onCreateBlog, onFormSubmit }) => {
   const [title, setTitle] = useState("");
   const [url, setUrl] = useState("");
   const [author, setAuthor] = useState("");
@@ -16,48 +17,53 @@ const BlogForm = ({ onCreateBlog }) => {
     setTitle("");
     setAuthor("");
     setUrl("");
+    if (onFormSubmit) {
+      onFormSubmit();
+    }
   };
 
   return (
     <>
-      <h1>create new</h1>
+      <Typography variant="h4" component="div" gutterBottom>
+        Create New Blog
+      </Typography>
       <form data-testid="blog-form" onSubmit={handleSubmit}>
         <div>
-          <label>title:</label>
-          <input
+          <TextField
             id="title"
-            type="text"
-            placeholder="Enter title..."
+            label="Title"
+            variant="outlined"
+            margin="normal"
+            size="small"
             value={title}
-            name="title"
             onChange={({ target }) => setTitle(target.value)}
           />
         </div>
         <div>
-          <label>author:</label>
-          <input
+          <TextField
             id="author"
-            type="text"
-            placeholder="Enter author..."
+            label="Author"
+            variant="outlined"
+            margin="normal"
+            size="small"
             value={author}
-            name="author"
             onChange={({ target }) => setAuthor(target.value)}
           />
         </div>
         <div>
-          <label>url:</label>
-          <input
+          <TextField
             id="url"
-            type="text"
-            placeholder="Enter URL..."
+            label="URL"
+            variant="outlined"
+            margin="normal"
+            size="small"
             value={url}
-            name="url"
             onChange={({ target }) => setUrl(target.value)}
           />
         </div>
-        <button id="createButton" type="submit">
-          create
-        </button>
+        <Button id="createButton" type="submit" variant="contained" color="primary">
+          Create
+        </Button>
       </form>
     </>
   );
@@ -65,6 +71,7 @@ const BlogForm = ({ onCreateBlog }) => {
 
 BlogForm.propTypes = {
   onCreateBlog: PropTypes.func.isRequired,
+  onFormSubmit: PropTypes.func,
 };
 
 export default BlogForm;

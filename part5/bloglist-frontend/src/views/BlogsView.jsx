@@ -1,22 +1,30 @@
+import { Table, TableBody, TableCell, TableContainer, TableRow, Paper } from '@mui/material';
+import { Link } from 'react-router-dom';
 import Togglable from "../components/Togglable";
 import BlogForm from "../components/BlogForm";
-import Blog from "../components/Blog";
 
-const BlogsView = ({ user, blogFormRef, handleCreateBlog, sortedBlogs, handleLikeBlog, handleDeleteBlog }) => {
+const BlogsView = ({ blogFormRef, handleCreateBlog, sortedBlogs }) => {
   return (
     <div>
       <Togglable buttonLabel="create new" ref={blogFormRef}>
         <BlogForm onCreateBlog={handleCreateBlog}></BlogForm>
       </Togglable>
-      {sortedBlogs.map((blog) => (
-        <Blog
-          key={blog.id}
-          blog={blog}
-          user={user}
-          onLike={handleLikeBlog}
-          onDelete={handleDeleteBlog}
-        />
-      ))}
+      <TableContainer component={Paper}>
+        <Table>
+          <TableBody>
+            {sortedBlogs.map((blog) => (
+              <TableRow key={blog.id}>
+                <TableCell>
+                  <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
+                </TableCell>
+                <TableCell>
+                  {blog.author}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </div>
   );
 };
