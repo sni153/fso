@@ -1,4 +1,6 @@
 /* eslint-disable react/prop-types */
+import BirthYear from './BirthYear'
+
 const Authors = ({ show, authors }) => {
   if (!show) {
     return null
@@ -23,6 +25,7 @@ const Authors = ({ show, authors }) => {
           ))}
         </tbody>
       </table>
+      <BirthYear />
     </div>
   )
 }
