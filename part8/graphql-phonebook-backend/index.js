@@ -2,8 +2,6 @@ const { ApolloServer } = require('@apollo/server')
 const { startStandaloneServer } = require('@apollo/server/standalone')
 const { v1: uuid } = require('uuid')
 const { GraphQLError } = require('graphql')
-
-const User = require('./models/user')
 const jwt = require('jsonwebtoken')
 
 const mongoose = require('mongoose')
@@ -83,6 +81,12 @@ const typeDefs = `
     id: ID!
   }
 
+  type Query {
+    personCount: Int!
+    allPersons: [Person!]!
+    findPerson(name: String!): Person
+  }
+
   type Mutation {
     addPerson(
       name: String!
@@ -104,6 +108,10 @@ const typeDefs = `
       username: String!
       password: String!
     ): Token
+
+    addAsFriend(
+      name: String!
+    ): User
   }
 `
 
@@ -121,8 +129,7 @@ const resolvers = {
     me: (root, args, context) => {
       return context.currentUser
     }
-  }, 
-  Person: {
+  }, Person: {
     address: (root) => {
       return {
         street: root.street,
@@ -131,39 +138,7 @@ const resolvers = {
     },
   },
   Mutation: {
-    createUser: async (root, args) => {
-      const user = new User({ username: args.username })
-  
-      return user.save()
-        .catch(error => {
-          throw new GraphQLError('Creating the user failed', {
-            extensions: {
-              code: 'BAD_USER_INPUT',
-              invalidArgs: args.username,
-              error
-            }
-          })
-        })
-    },
-    login: async (root, args) => {
-      const user = await User.findOne({ username: args.username })
-  
-      if ( !user || args.password !== 'secret' ) {
-        throw new GraphQLError('wrong credentials', {
-          extensions: {
-            code: 'BAD_USER_INPUT'
-          }
-        })        
-      }
-  
-      const userForToken = {
-        username: user.username,
-        id: user._id,
-      }
-  
-      return { value: jwt.sign(userForToken, process.env.JWT_SECRET) }
-    },
-    addPerson: async (root, args) => {
+    addPerson: async (root, args, context) => {
       const person = new Person({ ...args })
       const currentUser = context.currentUser
 
@@ -281,9 +256,13 @@ startStandaloneServer(server, {
       const decodedToken = jwt.verify(
         auth.substring(7), process.env.JWT_SECRET
       )
+      console.log('decodedToken:', decodedToken); // Log the decoded token
       const currentUser = await User
         .findById(decodedToken.id).populate('friends')
+      console.log('currentUser:', currentUser); // Log the fetched user
       return { currentUser }
+    } else {
+      console.log('No auth header or auth does not start with Bearer'); // Log if there's no auth header or it doesn't start with Bearer
     }
   },
 }).then(({ url }) => {
