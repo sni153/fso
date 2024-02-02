@@ -1,16 +1,18 @@
-const { ApolloServer } = require('@apollo/server')
-const { startStandaloneServer } = require('@apollo/server/standalone')
-const { v1: uuid } = require('uuid')
+// Import necessary modules
+const { ApolloServer } = require('@apollo/server') // Apollo Server for creating GraphQL server
+const { startStandaloneServer } = require('@apollo/server/standalone') // Standalone server for Apollo
+const { v1: uuid } = require('uuid') // UUID for generating unique IDs
 
-const mongoose = require('mongoose')
-mongoose.set('strictQuery', false)
-const Author = require('./models/author')
-const Book = require('./models/book')
-require('dotenv').config()
+const mongoose = require('mongoose') // Mongoose for MongoDB interactions
+mongoose.set('strictQuery', false) // Disable strict mode for queries
+const Author = require('./models/author') // Import Author model
+const Book = require('./models/book') // Import Book model
+require('dotenv').config() // Load environment variables
 
-const MONGODB_URI = process.env.MONGODB_URI
+const MONGODB_URI = process.env.MONGODB_URI // Get MongoDB connection string from environment variables
 console.log('connecting to', MONGODB_URI)
 
+// Connect to MongoDB
 mongoose.connect(MONGODB_URI)
   .then(() => {
     console.log('connected to MongoDB')
@@ -19,6 +21,7 @@ mongoose.connect(MONGODB_URI)
     console.log('error connection to MongoDB:', error.message)
   })
 
+  // Mock data for authors
 let authors = [
   {
     name: 'Robert Martin',
@@ -51,6 +54,7 @@ let authors = [
  * However, for simplicity, we will store the author's name in connection with the book
 */
 
+// Mock data for books
 let books = [
   {
     title: 'Clean Code',
@@ -103,6 +107,7 @@ let books = [
   },
 ]
 
+// Define GraphQL schema
 const typeDefs = `
   type Author {
     name: String!
@@ -141,27 +146,40 @@ const typeDefs = `
   }
 `
 
+let authorCount; // Variable to store the count of authors
+
+// Define resolvers for the GraphQL schema
 const resolvers = {
+    // Resolvers for queries and mutations
   Query: {
-    bookCount: () => books.length,
-    authorCount: () => authors.length,
-    allBooks: (root, args) => {
-      if (args.author && args.genre) {
-        return books.filter(book => book.author === args.author && book.genres.includes(args.genre))
+    bookCount: async () => await Book.countDocuments({}),
+    authorCount: async () => {
+      if (!authorCount) {
+        authorCount = await Author.countDocuments({});
       }
-      if (args.author) {
-        return books.filter(book => book.author === args.author)
-      }
-      if (args.genre) {
-        return books.filter(book => book.genres.includes(args.genre))
-      }
-      return books
+      return authorCount;
     },
-    allAuthors: () => authors
+    allBooks: async (root, args) => {
+      let query = {};
+
+      if (args.author) {
+        const author = await Author.findOne({ name: args.author })
+        if (author) {
+          query.author = author._id;
+        }
+      }
+
+      if (args.genre) {
+        query.genres = args.genre;
+      }
+
+      return await Book.find(query).populate('author')
+    },
+    allAuthors: async () => await Author.find({})
   },
   Author: {
-    bookCount: (root) => {
-      return books.filter(book => book.author === root.name).length
+    bookCount: async (root) => {
+      return await Book.countDocuments({ author: root._id });
     }
   },
   Mutation: {
@@ -184,25 +202,29 @@ const resolvers = {
     
       return book;
     },
-    editAuthor: (root, args) => {
-      const author = authors.find(author => author.name === args.name)
-     
-      if (!author) {
-        return null
+    editAuthor: async (root, args) => {
+      const updatedAuthor = await Author.findOneAndUpdate(
+        { name: args.name },
+        { born: args.setBornTo },
+        { new: true }
+      )
+
+      if (!updatedAuthor) {
+        return null;
       }
 
-      const updatedAuthor = {...author, born: args.setBornTo}
-      authors = authors.map(author => author.name === args.name ? updatedAuthor : author)
-      return updatedAuthor
+      return updatedAuthor;
     }
   }
 }
 
+// Create Apollo Server with the defined schema and resolvers
 const server = new ApolloServer({
   typeDefs,
   resolvers,
 })
 
+// Start the server on port 4000
 startStandaloneServer(server, {
   listen: { port: 4000 },
 }).then(({ url }) => {
