@@ -2,6 +2,23 @@ const { ApolloServer } = require('@apollo/server')
 const { startStandaloneServer } = require('@apollo/server/standalone')
 const { v1: uuid } = require('uuid')
 
+const mongoose = require('mongoose')
+mongoose.set('strictQuery', false)
+const Author = require('./models/author')
+const Book = require('./models/book')
+require('dotenv').config()
+
+const MONGODB_URI = process.env.MONGODB_URI
+console.log('connecting to', MONGODB_URI)
+
+mongoose.connect(MONGODB_URI)
+  .then(() => {
+    console.log('connected to MongoDB')
+  })
+  .catch((error) => {
+    console.log('error connection to MongoDB:', error.message)
+  })
+
 let authors = [
   {
     name: 'Robert Martin',
@@ -97,9 +114,9 @@ const typeDefs = `
   type Book {
     title: String!
     published: Int!
-    author: String!
-    id: ID!
+    author: Author!
     genres: [String!]!
+    id: ID!
   }
 
   type Query {
@@ -108,13 +125,15 @@ const typeDefs = `
     allBooks(author: String, genre: String): [Book!]!
     allAuthors: [Author!]!
   }
+
   type Mutation {
     addBook(
       title: String!
       author: String!
       published: Int!
       genres: [String!]!
-    ): Book
+    ): Book!
+
     editAuthor(
       name: String!
       setBornTo: Int!
@@ -146,20 +165,24 @@ const resolvers = {
     }
   },
   Mutation: {
-    addBook: (root, args) => {
-      const book = {...args, id: uuid()}
-    
+    addBook: async (root, args) => {
       // Check if the author exists
-      let author = authors.find(author => author.name === args.author)
-
-      // If the author doesn't exist, add them to the authors array
+      let author = await Author.findOne({ name: args.author });
+    
+      // If the author doesn't exist, create a new author
       if (!author) {
-        author = {name: args.author, id: uuid()}
-        authors = authors.concat(author)
+        author = new Author({ name: args.author });
+        await author.save();
       }
-
-      books = books.concat(book)
-      return book
+    
+      // Create a new book with the author
+      let book = new Book({ ...args, author: author._id });
+    
+      // Save the book and populate the author field
+      book = await book.save();
+      book = await Book.populate(book, { path: 'author' });
+    
+      return book;
     },
     editAuthor: (root, args) => {
       const author = authors.find(author => author.name === args.name)
