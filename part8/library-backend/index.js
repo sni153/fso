@@ -1,7 +1,7 @@
 // Import necessary modules
 const { ApolloServer } = require('@apollo/server') // Apollo Server for creating GraphQL server
 const { startStandaloneServer } = require('@apollo/server/standalone') // Standalone server for Apollo
-const { v1: uuid } = require('uuid') // UUID for generating unique IDs
+const { GraphQLError } = require('graphql');
 
 const mongoose = require('mongoose') // Mongoose for MongoDB interactions
 mongoose.set('strictQuery', false) // Disable strict mode for queries
@@ -187,20 +187,64 @@ const resolvers = {
       // Check if the author exists
       let author = await Author.findOne({ name: args.author });
     
-      // If the author doesn't exist, create a new author
-      if (!author) {
-        author = new Author({ name: args.author });
+       // If the author doesn't exist, create a new author
+    if (!author) {
+      author = new Author({ name: args.author });
+      try {
         await author.save();
+      } catch (error) {
+        if (error.message.includes('is shorter than the minimum allowed length (4)')) {
+          throw new GraphQLError('Author name is too short. It should be at least 4 characters long.', {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+              invalidArgs: args,
+            }
+          });
+        }
       }
+    }
     
-      // Create a new book with the author
-      let book = new Book({ ...args, author: author._id });
+      try {
+        // Create a new book with the author
+        let book = new Book({ ...args, author: author._id });
     
-      // Save the book and populate the author field
-      book = await book.save();
-      book = await Book.populate(book, { path: 'author' });
+        // Save the book and populate the author field
+        book = await book.save();
+        book = await Book.populate(book, { path: 'author' });
     
-      return book;
+        return book;
+      } catch (error) {
+        if (error.message.includes('is shorter than the minimum allowed length (5)')) {
+          throw new GraphQLError('Book title is too short. It should be at least 5 characters long.', {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+              invalidArgs: args,
+            }
+          });
+        } else if (error.message.includes('is shorter than the minimum allowed length (4)')) {
+          throw new GraphQLError('Author name is too short. It should be at least 4 characters long.', {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+              invalidArgs: args,
+            }
+          });
+        } else if (error.message.includes('Book validation failed: title: Error, expected `title` to be unique')) {
+          throw new GraphQLError('Book title already exists. Please provide a unique title.', {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+              invalidArgs: args,
+            }
+          });
+        } else {
+          throw new GraphQLError('An unexpected error has occurred. Please try again later.', {
+            extensions: {
+              code: 'INTERNAL_SERVER_ERROR',
+              originalMessage: error.message,
+              invalidArgs: args,
+            }
+          });
+        }
+      }
     },
     editAuthor: async (root, args) => {
       const updatedAuthor = await Author.findOneAndUpdate(
