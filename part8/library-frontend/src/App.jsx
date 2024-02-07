@@ -6,18 +6,19 @@ import Books from './components/Books'
 import NewBook from './components/NewBook'
 import LoginForm from './components/LoginForm' // import LoginForm
 import Notify from './components/Notify'
-import { ALL_AUTHORS, ALL_BOOKS } from './queries'
+import { ALL_AUTHORS, ALL_BOOKS, ME } from './queries'
 import { useApolloClient } from '@apollo/client';
 
 const App = () => {
   const authorsResult = useQuery(ALL_AUTHORS)
   const booksResult = useQuery(ALL_BOOKS)
+  const meResult = useQuery(ME)
   const [page, setPage] = useState('authors')
   const [token, setToken] = useState(null) // add token state
   const [errorMessage, setErrorMessage] = useState(null)
   const client = useApolloClient()
 
-  if (authorsResult.loading || booksResult.loading)  {
+  if (authorsResult.loading || booksResult.loading || meResult.loading)  {
     return <div>loading...</div>
   }
 
@@ -54,7 +55,7 @@ const App = () => {
       </div>
 
       <Authors show={page === 'authors'} authors={authorsResult.data.allAuthors}/>
-      <Books show={page === 'books'} books={booksResult.data ? booksResult.data.allBooks : []} />
+      <Books show={page === 'books'} books={booksResult.data ? booksResult.data.allBooks : []} favoriteGenre={meResult.data.me.favoriteGenre}/>
       {token ? <NewBook show={page === 'add'} /> : <LoginForm show={page === 'login'} setToken={setToken} />} {/* show LoginForm or NewBook based on login state */}
     </div>
   )
