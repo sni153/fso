@@ -1,11 +1,22 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from 'react'
-const Books = ({ show, books, favoriteGenre }) => {
-const [selectedGenre, setSelectedGenre] = useState(null);
-const [recommend, setRecommend] = useState(false);
+import { useQuery } from '@apollo/client'
+import { ALL_BOOKS } from '../queries'
 
-  // Extract genres from books data
-  const genres = [...new Set(books.flatMap(book => book.genres))];
+const Books = ({ show, favoriteGenre }) => {
+  const [selectedGenre, setSelectedGenre] = useState(null);
+  const [recommend, setRecommend] = useState(false);
+
+  const { loading: loadingAllBooks, data: allBooksData } = useQuery(ALL_BOOKS);
+
+  // Extract genres from all books data
+  const genres = allBooksData ? [...new Set(allBooksData.allBooks.flatMap(book => book.genres))] : [];
+
+  // Fetch books based on selectedGenre
+  const { loading, error, data } = useQuery(ALL_BOOKS, {
+    variables: { genre: selectedGenre },
+    skip: !selectedGenre, // Skip this query if no genre is selected
+  });
 
   useEffect(() => {
     if (recommend) {
@@ -13,13 +24,13 @@ const [recommend, setRecommend] = useState(false);
     }
   }, [recommend, favoriteGenre]);
 
-  if (!show) {
+  if (!show || loadingAllBooks) {
     return null
   }
 
   // Filter books based on selectedGenre
-  const filteredBooks = selectedGenre ? books.filter(book => book.genres.includes(selectedGenre)) : books;
-  
+  const filteredBooks = selectedGenre && data ? data.allBooks : allBooksData.allBooks;
+
   // Set the title based on selectedGenre
   const title = 'books' + (selectedGenre ? ` in genre ${selectedGenre}` : '');
   const favoriteGenreTitle = recommend ? `books in your favorite genre  ${favoriteGenre}` : '';
