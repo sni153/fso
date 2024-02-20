@@ -34,7 +34,10 @@ mongoose.connect(MONGODB_URI)
     console.log('error connection to MongoDB:', error.message)
   })
 
-  // Mock data for authors
+// Enable debugging for Mongoose
+mongoose.set('debug', true) 
+
+// Mock data for authors
 let authors = [
   {
     name: 'Robert Martin',

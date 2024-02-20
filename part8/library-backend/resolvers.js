@@ -56,8 +56,15 @@ Mutation: {
         }
       })
     }
-    // Check if the author exists
-    let author = await Author.findOne({ name: args.author });
+
+    // Fetch all authors in a single request
+    const authors = await Author.find({});
+
+    // Find the author from the fetched authors
+    let author = authors.find(author => author.name === args.author);
+
+    // // Check if the author exists
+    // let author = await Author.findOne({ name: args.author });
   
      // If the author doesn't exist, create a new author
   if (!author) {
@@ -83,6 +90,10 @@ Mutation: {
       // Save the book and populate the author field
       book = await book.save();
       book = await Book.populate(book, { path: 'author' });
+
+      // Increment the bookCount of the author
+      author.bookCount += 1;
+      await author.save();
 
       pubsub.publish('BOOK_ADDED', { bookAdded: book })
   
