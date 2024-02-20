@@ -94,7 +94,7 @@ useSubscription(BOOK_ADDED, {
       </div>
 
       <Authors show={page === 'authors'} authors={authorsResult.data.allAuthors}/>
-      <Books show={page === 'books'} favoriteGenre={meResult.data.me.favoriteGenre}/>
+      <Books show={page === 'books'} favoriteGenre={meResult.data?.me?.favoriteGenre}/>
       {token ? <NewBook show={page === 'add'} /> : <LoginForm show={page === 'login'} setToken={setToken} />}
     </div>
   )
