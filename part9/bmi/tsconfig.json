@@ -1,0 +1,7 @@
+{
+	"scripts": {
+	    "ts-node": "ts-node"
+	  },
+  "compilerOptions": {
+    "noImplicitAny": true}
+}
