@@ -11,4 +11,7 @@ const calculateBmi = (height: number, weight: number): string => {
   }
 }
 
-console.log(calculateBmi(180, 74)); // Normal (healthy weight)
+const inputHeight = Number(process.argv[2]);
+const inputWeight = Number(process.argv[3]);
+
+console.log(calculateBmi(inputHeight, inputWeight));

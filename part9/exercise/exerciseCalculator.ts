@@ -1,12 +1,5 @@
-interface Result {
-  periodLength: number;
-  trainingDays: number;
-  success: boolean;
-  rating: number;
-  ratingDescription: string;
-  target: number;
-  average: number;
-}
+import { ExerciseValues, Result } from './types';
+import { parseArguments } from './utils';
 
 const calculateExercises = (dailyExerciseHours: number[], targetHours: number): Result => {
   const periodLength = dailyExerciseHours.length;
@@ -26,4 +19,13 @@ const calculateExercises = (dailyExerciseHours: number[], targetHours: number): 
   };
 }
 
-console.log(calculateExercises([3, 0, 2, 4.5, 0, 3, 1], 2))
+try {
+  const { targetHours, dailyExerciseHours }: ExerciseValues = parseArguments(process.argv);
+  console.log(calculateExercises(dailyExerciseHours, targetHours));
+} catch (error: unknown) {
+  let errorMessage = 'Something bad happened.'
+  if (error instanceof Error) {
+    errorMessage += ' Error: ' + error.message;
+  }
+  console.log(errorMessage);
+}
