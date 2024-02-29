@@ -1,7 +1,7 @@
 import { ExerciseValues, Result } from "./types";
 import { parseArguments } from "./utils";
 
-const calculateExercises = (
+export const calculateExercises = (
   dailyExerciseHours: number[],
   targetHours: number
 ): Result => {
