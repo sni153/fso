@@ -9,7 +9,7 @@ export const calculateBmi = (height: number, weight: number): string => {
   } else {
     return 'Obese';
   }
-}
+};
 
 const inputHeight = Number(process.argv[2]);
 const inputWeight = Number(process.argv[3]);
