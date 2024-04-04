@@ -1,0 +1,3 @@
+[submodule "part11/pokedex"]
+	path = part11/pokedex
+	url = https://github.com/sni153/full-stack-open-pokedex.git
